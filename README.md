@@ -1,115 +1,90 @@
-<img width="1177" height="1019" alt="image" src="https://github.com/user-attachments/assets/21ce844f-067a-4413-9b12-cd1525e8b220" />
-<img width="1179" height="1019" alt="image" src="https://github.com/user-attachments/assets/c0d51d73-59ac-48dd-af09-1582769f7c93" />
-<img width="1183" height="1025" alt="image" src="https://github.com/user-attachments/assets/70ed6de1-f5ea-4c72-bf34-1028b3d841ba" />
+# 🎵 Freakinbeats Web
 
-
-# freakinbeats-web-poc
-freakinbeats.com
-
-# 🎵 Discogs Vinyl Collection Collage
-
-A beautiful web application that displays all your Discogs vinyl listings as an interactive image collage.
+A modular Flask ecommerce application for displaying and managing Discogs vinyl listings.
 
 ## ✨ Features
 
-- 🖼️ **Visual Collage**: All vinyl record images displayed in a responsive grid
-- 📊 **Statistics**: Collection stats including total items, average price, and total value
-- 🎨 **Modern Design**: Beautiful gradient background with glassmorphism effects
-- 📱 **Responsive**: Works on desktop, tablet, and mobile devices
-- 🔍 **Interactive**: Click on any vinyl to see detailed information
-- ⚡ **Fast Loading**: Lazy loading images for better performance
+- 🖼️ **Visual Collage**: Responsive grid of vinyl record images
+- 🎨 **Modern Design**: SCSS-based styling with glassmorphism effects
+- 📱 **Responsive**: Works on desktop, tablet, and mobile
+- 🛒 **Shopping Cart**: Add items and manage cart
+- 🗄️ **Database Ready**: SQLAlchemy ORM with Discogs API integration
+- 🔧 **Modular**: Flask blueprints for scalable architecture
 
 ## 🚀 Quick Start
 
-1. **Make sure you have a Discogs CSV file** (run `discogs_seller_export.py` first)
+1. **Install dependencies**:
+   ```bash
+   pip3 install -r requirements.txt
+   ```
 
 2. **Start the server**:
    ```bash
-   python3 server.py
+   python3 run.py
    ```
 
-3. **Open your browser** and visit:
+3. **Open your browser**:
    ```
    http://localhost:3000
    ```
 
-## 📁 File Structure
+## 📁 Project Structure
 
 ```
-discogs_image_collage/
-├── index.html          # Main web page with collage
-├── server.py           # Python web server
-└── README.md           # This file
+app/
+├── routes/
+│   ├── api.py           # API endpoints
+│   └── main.py          # Page routes
+├── services/
+│   └── inventory_service.py # CSV operations
+├── static/
+│   ├── scss/            # SCSS stylesheets
+│   └── js/              # JavaScript modules
+└── templates/           # Jinja2 templates
 ```
 
-## 🛠️ How It Works
+## 🗄️ Database Migration (Optional)
 
-1. **Server**: Reads the Discogs CSV file and serves it as JSON via `/api/data`
-2. **Frontend**: Fetches the data and creates a responsive grid of vinyl images
-3. **Images**: Displays actual Discogs vinyl cover images from the `image_uri` field
-4. **Fallback**: Shows "No Image" placeholder for items without images
+To migrate from CSV to SQLite database:
 
-## 📊 Data Requirements
-
-The server automatically looks for CSV files with names like:
-- `discogs_seller_listings.csv`
-- `discogs_seller_listings_*.csv`
-
-It will use the most recent file found in the current directory.
-
-## 🎨 Customization
-
-You can customize the appearance by editing the CSS in `index.html`:
-- Change colors in the `body` background gradient
-- Modify grid layout in `.collage-grid`
-- Adjust vinyl item styling in `.vinyl-item`
-
-## 🔧 Troubleshooting
-
-**Server won't start?**
-- Make sure port 3000 is available
-- Check that you have a Discogs CSV file in the current directory
-
-Local Server Restart Commands
 ```bash
-pkill -f "python.*server.py" || pkill -f "python.*simple_server.py" || true
-lsof -ti:3000 | xargs kill -9 2>/dev/null || true
-cd /Users/username/directory/git-workspace/freakinbeats-web-poc && python3 server.py
+python3 migrate_csv_to_db.py
 ```
 
-**No images showing?**
-- Verify the CSV file has `image_uri` data
-- Check browser console for image loading errors
+Set your Discogs API token:
+```bash
+export DISCOGS_TOKEN="your_token_here"
+```
 
-**Data not loading?**
-- Ensure the CSV file is properly formatted
-- Check server logs for errors
+## 🎨 Styling
 
-## 📱 Browser Compatibility
+Styles use SCSS with variables and mixins:
+- Edit `app/static/scss/_variables.scss` for colors/spacing
+- SCSS auto-compiles to CSS via Flask-Assets
 
-- ✅ Chrome/Chromium
-- ✅ Firefox
-- ✅ Safari
-- ✅ Edge
-- ✅ Mobile browsers
+## 🔧 Development
 
-## 🎯 Features in Detail
+**Restart server**:
+```bash
+pkill -f "python.*server.py"
+lsof -ti:3000 | xargs kill -9 2>/dev/null || true
+python3 run.py
+```
 
-### Visual Collage
-- Responsive grid that adapts to screen size
-- Hover effects with scaling and shadows
-- Lazy loading for better performance
-- Fallback for missing images
+**Add new routes**: Create blueprints in `app/routes/`
 
-### Statistics Panel
-- Total number of vinyl items
-- Count of items with images
-- Average price calculation
-- Total collection value
+**Add new models**: Define in `app/models/`
 
-### Interactive Elements
-- Click any vinyl to see full details
-- Smooth scrolling with visual indicators
-- Responsive design for all devices
+## 📚 Documentation
 
-Enjoy exploring your vinyl collection! 🎵
+- `MIGRATION_GUIDE.md` - Flask migration details
+- `SCSS_GUIDE.md` - Styling guide
+- `ADMIN_SETUP.md` - Admin panel setup
+
+## 🌐 Browser Support
+
+- Chrome/Chromium ✅
+- Firefox ✅
+- Safari ✅
+- Edge ✅
+- Mobile browsers ✅

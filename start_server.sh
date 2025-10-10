@@ -24,4 +24,4 @@ echo "⏹️  Press Ctrl+C to stop the server"
 echo ""
 
 # Start the server
-python3 simple_server.py
+python3 run.py

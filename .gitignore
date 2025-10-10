@@ -1,0 +1,23 @@
+# Flask-Assets generated files
+app/static/css/*
+app/static/.webassets-cache/
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
