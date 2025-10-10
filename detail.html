@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freakin Beats - Record Details</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .nav {
+            position: absolute;
+            top: 0;
+            right: 0;
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .cart-icon {
+            position: relative;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .detail-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .detail-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .vinyl-image-container {
+            text-align: center;
+        }
+
+        .vinyl-image {
+            width: 100%;
+            max-width: 400px;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .no-image {
+            background: linear-gradient(45deg, #374151, #4b5563);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 1.2rem;
+            border-radius: 15px;
+        }
+
+        .vinyl-info {
+            color: white;
+        }
+
+        .vinyl-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            line-height: 1.2;
+        }
+
+        .vinyl-artist {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .vinyl-price {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #4ade80;
+            margin-bottom: 20px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .detail-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .detail-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .add-to-cart {
+            background: #4ade80;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .add-to-cart:hover {
+            background: #22c55e;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 222, 128, 0.4);
+        }
+
+        .add-to-cart:disabled {
+            background: #6b7280;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.2rem;
+            padding: 50px;
+        }
+
+        .error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 0;
+            left: 0;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .detail-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .vinyl-image {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="/" class="back-button">← Back to Shop</a>
+        <div class="nav">
+            <a href="/">🏠 Home</a>
+            <a href="/cart" class="cart-icon">
+                🛒 Cart
+                <span class="cart-count" id="cart-count">0</span>
+            </a>
+        </div>
+        <h1>🎵 Freakin Beats</h1>
+    </div>
+
+    <div class="detail-container">
+        <div class="loading" id="loading">
+            🎵 Loading record details...
+        </div>
+        
+        <div class="error" id="error" style="display: none;">
+            ❌ Error loading record details. Please try again.
+        </div>
+
+        <div class="detail-content" id="detail-content" style="display: none;">
+            <div class="vinyl-image-container">
+                <div id="vinyl-image-container">
+                    <!-- Image will be inserted here -->
+                </div>
+            </div>
+            
+            <div class="vinyl-info">
+                <div class="vinyl-title" id="vinyl-title"></div>
+                <div class="vinyl-artist" id="vinyl-artist"></div>
+                <div class="vinyl-price" id="vinyl-price"></div>
+                
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">Label</div>
+                        <div class="detail-value" id="vinyl-label"></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Year</div>
+                        <div class="detail-value" id="vinyl-year"></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Condition</div>
+                        <div class="detail-value" id="vinyl-condition"></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Sleeve</div>
+                        <div class="detail-value" id="vinyl-sleeve"></div>
+                    </div>
+                </div>
+                
+                <div class="detail-item" style="grid-column: 1 / -1;">
+                    <div class="detail-label">Comments</div>
+                    <div class="detail-value" id="vinyl-comments"></div>
+                </div>
+                
+                <button class="add-to-cart" id="add-to-cart">
+                    Add to Cart
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class VinylDetail {
+            constructor() {
+                this.item = null;
+                this.itemIndex = this.getItemIndexFromUrl();
+                this.loadData();
+            }
+
+            getItemIndexFromUrl() {
+                const path = window.location.pathname;
+                const match = path.match(/\/detail\/(\d+)/);
+                return match ? parseInt(match[1]) : null;
+            }
+
+            async loadData() {
+                try {
+                    const response = await fetch('/api/data');
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const data = await response.json();
+                    
+                    if (this.itemIndex !== null && data[this.itemIndex]) {
+                        this.item = data[this.itemIndex];
+                        this.renderDetail();
+                        this.updateCartCount();
+                    } else {
+                        this.showError();
+                    }
+                } catch (error) {
+                    console.error('Error loading data:', error);
+                    this.showError();
+                }
+            }
+
+            renderDetail() {
+                const loading = document.getElementById('loading');
+                const content = document.getElementById('detail-content');
+                
+                loading.style.display = 'none';
+                content.style.display = 'grid';
+
+                // Set basic info
+                document.getElementById('vinyl-title').textContent = this.item.release_title || 'Unknown Title';
+                document.getElementById('vinyl-artist').textContent = this.item.artist_names || 'Unknown Artist';
+                document.getElementById('vinyl-price').textContent = this.formatPrice(this.item.price_value, this.item.price_currency);
+                document.getElementById('vinyl-label').textContent = this.item.label_names || 'Unknown';
+                document.getElementById('vinyl-year').textContent = this.item.release_year || 'Unknown';
+                document.getElementById('vinyl-condition').textContent = this.item.condition || 'Unknown';
+                document.getElementById('vinyl-sleeve').textContent = this.item.sleeve_condition || 'Unknown';
+                document.getElementById('vinyl-comments').textContent = this.item.comments || 'No comments available';
+
+                // Set image
+                const imageContainer = document.getElementById('vinyl-image-container');
+                const hasImage = this.item.image_uri && this.item.image_uri.trim() !== '';
+                
+                if (hasImage) {
+                    imageContainer.innerHTML = `
+                        <img src="${this.item.image_uri}" alt="${this.item.release_title || 'Vinyl'}" class="vinyl-image" onerror="this.parentElement.innerHTML='<div class=&quot;no-image&quot;>No Image Available</div>'">
+                    `;
+                } else {
+                    imageContainer.innerHTML = '<div class="vinyl-image no-image">No Image Available</div>';
+                }
+
+                // Set up add to cart button
+                this.setupAddToCart();
+            }
+
+            formatPrice(value, currency) {
+                if (!value || value === '') return 'Price N/A';
+                const numValue = parseFloat(value);
+                if (isNaN(numValue)) return 'Price N/A';
+                return `${currency || '$'}${numValue.toFixed(2)}`;
+            }
+
+            setupAddToCart() {
+                const button = document.getElementById('add-to-cart');
+                button.addEventListener('click', () => {
+                    this.addToCart();
+                });
+            }
+
+            addToCart() {
+                const cart = this.getCart();
+                const existingItem = cart.find(item => item.index === this.itemIndex);
+                
+                if (existingItem) {
+                    existingItem.quantity += 1;
+                } else {
+                    cart.push({
+                        index: this.itemIndex,
+                        title: this.item.release_title || 'Unknown Title',
+                        artist: this.item.artist_names || 'Unknown Artist',
+                        price: parseFloat(this.item.price_value) || 0,
+                        currency: this.item.price_currency || '$',
+                        image: this.item.image_uri || null,
+                        quantity: 1
+                    });
+                }
+                
+                localStorage.setItem('vinyl-cart', JSON.stringify(cart));
+                this.updateCartCount();
+                
+                // Show feedback
+                const button = document.getElementById('add-to-cart');
+                const originalText = button.textContent;
+                button.textContent = 'Added to Cart!';
+                button.disabled = true;
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.disabled = false;
+                }, 2000);
+            }
+
+            getCart() {
+                const cart = localStorage.getItem('vinyl-cart');
+                return cart ? JSON.parse(cart) : [];
+            }
+
+            updateCartCount() {
+                const cart = this.getCart();
+                const count = cart.reduce((total, item) => total + item.quantity, 0);
+                document.getElementById('cart-count').textContent = count;
+            }
+
+            showError() {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+            }
+        }
+
+        // Initialize the detail page when it loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new VinylDetail();
+        });
+    </script>
+</body>
+</html>
