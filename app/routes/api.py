@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 from app.services.inventory_service import InventoryService
+from app.models.access_log import AccessLog
 
 bp = Blueprint('api', __name__, url_prefix='/api')
 
@@ -43,3 +44,64 @@ def get_stats():
     service = InventoryService()
     stats = service.get_stats()
     return jsonify(stats)
+
+@bp.route('/logs')
+def get_access_logs():
+    """Get access logs with optional filters."""
+    limit = request.args.get('limit', 100, type=int)
+    path = request.args.get('path')
+    method = request.args.get('method')
+    ip = request.args.get('ip')
+    
+    # Build query
+    query = AccessLog.query
+    
+    if path:
+        query = query.filter(AccessLog.path.like(f'%{path}%'))
+    if method:
+        query = query.filter(AccessLog.method == method.upper())
+    if ip:
+        query = query.filter(AccessLog.ip_address == ip)
+    
+    # Get logs ordered by most recent first
+    logs = query.order_by(AccessLog.timestamp.desc()).limit(limit).all()
+    
+    return jsonify([log.to_dict() for log in logs])
+
+@bp.route('/logs/stats')
+def get_log_stats():
+    """Get access log statistics."""
+    from sqlalchemy import func
+    
+    total_requests = AccessLog.query.count()
+    
+    # Requests by method
+    by_method = AccessLog.query.with_entities(
+        AccessLog.method,
+        func.count(AccessLog.id).label('count')
+    ).group_by(AccessLog.method).all()
+    
+    # Requests by status code
+    by_status = AccessLog.query.with_entities(
+        AccessLog.status_code,
+        func.count(AccessLog.id).label('count')
+    ).group_by(AccessLog.status_code).all()
+    
+    # Top paths
+    top_paths = AccessLog.query.with_entities(
+        AccessLog.path,
+        func.count(AccessLog.id).label('count')
+    ).group_by(AccessLog.path).order_by(func.count(AccessLog.id).desc()).limit(10).all()
+    
+    # Average response time
+    avg_response_time = AccessLog.query.with_entities(
+        func.avg(AccessLog.response_time_ms)
+    ).scalar()
+    
+    return jsonify({
+        'total_requests': total_requests,
+        'by_method': {method: count for method, count in by_method},
+        'by_status': {status: count for status, count in by_status},
+        'top_paths': [{'path': path, 'count': count} for path, count in top_paths],
+        'avg_response_time_ms': round(avg_response_time, 2) if avg_response_time else None
+    })

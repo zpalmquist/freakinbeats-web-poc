@@ -128,6 +128,76 @@ def test_api_search():
         return False
 
 
+def test_access_logs():
+    """Test the /api/logs endpoint."""
+    url = "http://localhost:3000/api/logs?limit=5"
+    
+    print("\n" + "=" * 60)
+    print(f"📡 Making GET request to: {url}")
+    
+    try:
+        response = requests.get(url, timeout=5)
+        print(f"✅ Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"✅ Retrieved {len(data)} access log entries")
+            
+            if len(data) > 0:
+                print("\n📝 Sample access log:")
+                print("-" * 60)
+                sample = data[0]
+                print(f"Timestamp: {sample.get('timestamp')}")
+                print(f"Method: {sample.get('method')}")
+                print(f"Path: {sample.get('path')}")
+                print(f"IP: {sample.get('ip_address')}")
+                print(f"Status: {sample.get('status_code')}")
+                print(f"Response Time: {sample.get('response_time_ms')}ms")
+                print("-" * 60)
+            
+            return True
+        else:
+            print(f"❌ ERROR: Status code {response.status_code}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ ERROR: {e}")
+        return False
+
+
+def test_log_stats():
+    """Test the /api/logs/stats endpoint."""
+    url = "http://localhost:3000/api/logs/stats"
+    
+    print("\n" + "=" * 60)
+    print(f"📡 Making GET request to: {url}")
+    
+    try:
+        response = requests.get(url, timeout=5)
+        print(f"✅ Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print("\n📊 Access Log Statistics:")
+            print("-" * 60)
+            print(f"Total Requests: {data.get('total_requests')}")
+            print(f"By Method: {data.get('by_method')}")
+            print(f"By Status: {data.get('by_status')}")
+            print(f"Avg Response Time: {data.get('avg_response_time_ms')}ms")
+            print("\nTop Paths:")
+            for item in data.get('top_paths', [])[:5]:
+                print(f"  {item['path']}: {item['count']} requests")
+            print("-" * 60)
+            return True
+        else:
+            print(f"❌ ERROR: Status code {response.status_code}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ ERROR: {e}")
+        return False
+
+
 def main():
     """Run all API tests."""
     print("\n🎵 Freakinbeats API Test Suite")
@@ -142,6 +212,12 @@ def main():
     
     # Test search endpoint
     results.append(("Search Endpoint", test_api_search()))
+    
+    # Test access logs endpoint
+    results.append(("Access Logs Endpoint", test_access_logs()))
+    
+    # Test log stats endpoint
+    results.append(("Log Stats Endpoint", test_log_stats()))
     
     # Summary
     print("\n" + "=" * 60)
