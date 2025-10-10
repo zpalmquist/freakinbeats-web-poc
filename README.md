@@ -13,17 +13,19 @@ A modular Flask ecommerce application for displaying and managing Discogs vinyl 
 
 ## 🚀 Quick Start
 
-1. **Install dependencies**:
+1. **Make sure you have a Discogs CSV file** (run `discogs_seller_export.py` first)
+
+2. **Install dependencies**:
    ```bash
    pip3 install -r requirements.txt
    ```
 
-2. **Start the server**:
+3. **Start the server**:
    ```bash
    python3 run.py
    ```
 
-3. **Open your browser**:
+4. **Open your browser**:
    ```
    http://localhost:3000
    ```
