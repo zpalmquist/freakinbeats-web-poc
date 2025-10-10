@@ -11,4 +11,3 @@ def get_data():
     )
     data = service.get_all_items()
     return jsonify(data)
-

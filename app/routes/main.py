@@ -13,4 +13,3 @@ def cart():
 @bp.route('/detail/<listing_id>')
 def detail(listing_id):
     return render_template('detail.html')
-

@@ -10,4 +10,3 @@ if __name__ == '__main__':
     print(f"⏹️  Press Ctrl+C to stop")
     print("=" * 50)
     app.run(host='0.0.0.0', port=Config.PORT, debug=True)
-

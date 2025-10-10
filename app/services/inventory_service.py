@@ -41,4 +41,3 @@ class InventoryService:
                 return datetime.fromisoformat(posted + '+00:00')
         except (ValueError, TypeError):
             return None
-

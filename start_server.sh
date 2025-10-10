@@ -13,6 +13,7 @@ if [ ! -f "ingest/discogs_seller_listings.csv" ]; then
     echo "To export your data:"
     echo "  cd ingest"
     echo "  python3 discogs_seller_export.py --seller freakin_beats"
+    echo "  cd .."
     exit 1
 fi
 
