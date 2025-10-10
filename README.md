@@ -13,19 +13,29 @@ A modular Flask ecommerce application for displaying and managing Discogs vinyl 
 
 ## 🚀 Quick Start
 
-1. **Export your Discogs listings** (run the export script in `ingest/` directory):
-   ```bash
-   cd ingest
-   python3 discogs_seller_export.py --seller YOUR_SELLER_NAME
-   cd ..
-   ```
+### Prerequisites
 
-2. **Install dependencies**:
+Get your Discogs API token from: https://www.discogs.com/settings/developers
+
+### Setup Steps
+
+1. **Install dependencies**:
    ```bash
    pip3 install -r requirements.txt
    ```
 
-3. **Start the server**:
+2. **Set environment variables**:
+   ```bash
+   export DISCOGS_TOKEN="your_discogs_api_token"
+   export DISCOGS_SELLER_USERNAME="your_seller_username"
+   ```
+
+3. **(Optional) Migrate existing CSV data**:
+   ```bash
+   python3 migrate_csv_to_db.py
+   ```
+
+4. **Start the server**:
    ```bash
    python3 run.py
    ```
@@ -35,10 +45,12 @@ A modular Flask ecommerce application for displaying and managing Discogs vinyl 
    ./start_server.sh
    ```
 
-4. **Open your browser**:
+5. **Open your browser**:
    ```
    http://localhost:3000
    ```
+
+The application will automatically sync with Discogs API on startup and then hourly.
 
 ## 📁 Project Structure
 
@@ -65,18 +77,35 @@ requirements.txt       # Python dependencies
 start_server.sh        # Quick start script
 ```
 
-## 🗄️ Database Migration (Optional)
+## 🗄️ Database & API Integration
 
-To migrate from CSV to SQLite database:
+This application uses **SQLAlchemy ORM** with automatic **Discogs API synchronization**:
 
+- 📊 **SQLite Database**: All listings stored locally
+- 🔄 **Hourly Sync**: Automatic updates from Discogs API
+- 🔍 **Advanced Search**: Query by artist, genre, format
+- 📈 **Statistics**: Track inventory metrics
+
+### Configuration
+
+Required environment variables:
 ```bash
-python3 migrate_csv_to_db.py
+export DISCOGS_TOKEN="your_discogs_api_token"
+export DISCOGS_SELLER_USERNAME="your_seller_username"
 ```
 
-Set your Discogs API token:
-```bash
-export DISCOGS_TOKEN="your_token_here"
-```
+Optional settings in `config.py`:
+- `SYNC_INTERVAL_HOURS`: Sync frequency (default: 1 hour)
+- `ENABLE_AUTO_SYNC`: Enable/disable auto-sync (default: true)
+
+### API Endpoints
+
+- `GET /api/data` - Get all listings
+- `GET /api/data/<listing_id>` - Get specific listing
+- `GET /api/search?q=query&artist=name&genre=rock` - Search listings
+- `GET /api/stats` - Get inventory statistics
+
+See `MIGRATION_ARCHITECTURE.md` for detailed documentation.
 
 ## 🎨 Styling
 
