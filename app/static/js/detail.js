@@ -35,7 +35,7 @@ class VinylDetail {
 
         document.getElementById('vinyl-title').textContent = this.item.release_title || 'Unknown Title';
         document.getElementById('vinyl-artist').textContent = this.item.artist_names || 'Unknown Artist';
-        document.getElementById('vinyl-price').textContent = CartUtils.formatPrice(this.item.price_value, this.item.price_currency);
+        document.getElementById('vinyl-price').textContent = CartUtils.formatPrice(this.item.price_value);
         document.getElementById('vinyl-label').textContent = this.item.label_names || 'Unknown';
         document.getElementById('vinyl-year').textContent = this.item.release_year || 'Unknown';
         document.getElementById('vinyl-condition').textContent = this.item.condition || 'Unknown';

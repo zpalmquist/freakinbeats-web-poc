@@ -51,7 +51,7 @@
 .cart-item-price {
   font-size: 1.2rem;
   font-weight: bold;
-  color: $success-color;
+  color: black;
   text-align: center;
 }
 
@@ -121,7 +121,7 @@
 .summary-total {
   font-size: 1.5rem;
   font-weight: bold;
-  color: $success-color;
+  color: $text-primary;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
   padding-top: $spacing-sm;
   margin-top: $spacing-sm;
