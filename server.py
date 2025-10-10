@@ -71,7 +71,7 @@ class DiscogsCollageHandler(http.server.SimpleHTTPRequestHandler):
             self.send_error(500, f"Error serving index: {str(e)}")
     
     def serve_csv_data(self):
-        """Serve CSV data as JSON."""
+        """Serve CSV data as JSON, sorted by posted timestamp (most recent first)."""
         try:
             if not self.csv_file or not os.path.exists(self.csv_file):
                 self.send_error(404, "CSV file not found")
@@ -88,6 +88,29 @@ class DiscogsCollageHandler(http.server.SimpleHTTPRequestHandler):
                         # Convert empty strings to None for JSON
                         cleaned_row[key] = value if value.strip() else None
                     data.append(cleaned_row)
+            
+            # Sort by posted timestamp (most recent first)
+            def parse_timestamp(item):
+                posted = item.get('posted')
+                if not posted:
+                    return None
+                try:
+                    # Parse ISO format timestamp (e.g., "2025-06-27T15:36:31-07:00")
+                    from datetime import datetime
+                    # Remove timezone info for parsing, then add it back
+                    if posted.endswith(('Z', '+00:00')):
+                        return datetime.fromisoformat(posted.replace('Z', '+00:00'))
+                    elif '+' in posted or posted.count('-') > 2:
+                        # Has timezone info
+                        return datetime.fromisoformat(posted)
+                    else:
+                        # No timezone info, assume UTC
+                        return datetime.fromisoformat(posted + '+00:00')
+                except (ValueError, TypeError):
+                    return None
+            
+            # Sort data by posted timestamp (most recent first)
+            data.sort(key=parse_timestamp, reverse=True)
             
             # Send JSON response
             self.send_response(200)
