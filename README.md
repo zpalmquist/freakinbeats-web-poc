@@ -16,14 +16,29 @@ A beautiful web application that displays all your Discogs vinyl listings as an 
 
 ## 🚀 Quick Start
 
-1. **Make sure you have a Discogs CSV file** (run `discogs_seller_export.py` first)
-
-2. **Start the server**:
+1. **Install dependencies**:
    ```bash
-   python3 server.py
+   pip install -r requirements.txt
    ```
 
-3. **Open your browser** and visit:
+2. **Make sure you have a Discogs CSV file** (run the export script in `ingest/` first):
+   ```bash
+   cd ingest
+   python3 discogs_seller_export.py --seller YOUR_SELLER_NAME
+   cd ..
+   ```
+
+3. **Start the server**:
+   ```bash
+   ./start_server.sh
+   ```
+   
+   Or manually:
+   ```bash
+   python3 run.py
+   ```
+
+4. **Open your browser** and visit:
    ```
    http://localhost:3000
    ```
@@ -31,9 +46,31 @@ A beautiful web application that displays all your Discogs vinyl listings as an 
 ## 📁 File Structure
 
 ```
-discogs_image_collage/
-├── index.html          # Main web page with collage
-├── server.py           # Python web server
+freakinbeats-web-poc/
+├── app/
+│   ├── __init__.py                     # Flask app factory
+│   ├── routes/
+│   │   ├── main.py                     # Main page routes
+│   │   └── api.py                      # API endpoints
+│   ├── services/
+│   │   └── inventory_service.py        # Business logic for inventory
+│   ├── static/
+│   │   ├── css/                        # Compiled CSS
+│   │   ├── js/                         # JavaScript files
+│   │   └── scss/                       # SCSS source files
+│   └── templates/
+│       ├── base.html                   # Base template
+│       ├── index.html                  # Main collage page
+│       ├── cart.html                   # Shopping cart page
+│       └── detail.html                 # Detail view page
+├── ingest/
+│   ├── discogs_seller_export.py        # Script to export Discogs data
+│   ├── discogs_seller_listings.csv     # CSV data file
+│   └── discogs_seller_export_example_usage.sh
+├── config.py           # Application configuration
+├── run.py              # Flask application entry point
+├── requirements.txt    # Python dependencies
+├── start_server.sh     # Quick start script
 └── README.md           # This file
 ```
 
@@ -50,20 +87,24 @@ The server automatically looks for CSV files with names like:
 - `discogs_seller_listings.csv`
 - `discogs_seller_listings_*.csv`
 
-It will use the most recent file found in the current directory.
+It will use the most recent file found in the `ingest/` directory.
 
 ## 🎨 Customization
 
-You can customize the appearance by editing the CSS in `index.html`:
-- Change colors in the `body` background gradient
-- Modify grid layout in `.collage-grid`
-- Adjust vinyl item styling in `.vinyl-item`
+You can customize the appearance by editing the SCSS files in `app/static/scss/`:
+- **`_variables.scss`**: Change colors, fonts, and other design tokens
+- **`main.scss`**: Modify the main page layout and styling
+- **`cart.scss`**: Customize the shopping cart appearance
+- **`detail.scss`**: Adjust the detail view styling
+- **`_vinyl.scss`**: Change vinyl item display
+
+The SCSS files are automatically compiled to CSS when the Flask app starts.
 
 ## 🔧 Troubleshooting
 
 **Server won't start?**
 - Make sure port 3000 is available
-- Check that you have a Discogs CSV file in the current directory
+- Check that you have a Discogs CSV file in the `ingest/` directory
 
 **No images showing?**
 - Verify the CSV file has `image_uri` data

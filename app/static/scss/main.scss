@@ -1,0 +1,86 @@
+@import 'variables';
+@import 'base';
+@import 'vinyl';
+
+.collage-container {
+  @include glass;
+  border-radius: $radius-lg;
+  padding: $spacing-xl;
+}
+
+.collage-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: $spacing-md;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: $spacing-sm;
+}
+
+.vinyl-item {
+  position: relative;
+  @include glass;
+  border-radius: $radius-md;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  cursor: pointer;
+
+  &:hover {
+    transform: scale(1.05);
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  }
+  
+  .vinyl-image {
+    height: 200px;
+    border-radius: $radius-sm $radius-sm 0 0;
+  }
+  
+  .vinyl-info {
+    padding: $spacing-md;
+  }
+  
+  .vinyl-title {
+    font-size: 0.9rem;
+    margin-bottom: $spacing-xs;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .vinyl-artist {
+    font-size: 0.8rem;
+    margin-bottom: $spacing-xs;
+  }
+  
+  .vinyl-price {
+    font-size: 0.9rem;
+    color: $text-primary;
+  }
+  
+  .no-image {
+    font-size: 0.8rem;
+  }
+}
+
+.vinyl-condition {
+  font-size: 0.7rem;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 6px;
+  border-radius: $radius-sm;
+  display: inline-block;
+  margin-top: $spacing-xs;
+}
+
+@media (max-width: 768px) {
+  .collage-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: $spacing-sm;
+  }
+  
+  .vinyl-item .vinyl-image {
+    height: 150px;
+  }
+}
