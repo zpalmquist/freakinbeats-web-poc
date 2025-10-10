@@ -22,12 +22,16 @@ def create_app():
     assets.register('scss_all', scss)
     
     # Import models before creating tables
-    from app.models import listing  # noqa: F401
+    from app.models import listing, access_log  # noqa: F401
     
     # Create database tables
     with app.app_context():
         db.create_all()
         app.logger.info("Database tables created")
+    
+    # Initialize access logging middleware
+    from app.middleware.access_logger import init_access_logging
+    init_access_logging(app)
     
     # Register blueprints
     from app.routes import api, main
