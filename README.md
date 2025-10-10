@@ -70,6 +70,13 @@ You can customize the appearance by editing the CSS in `index.html`:
 - Make sure port 3000 is available
 - Check that you have a Discogs CSV file in the current directory
 
+Local Server Restart Commands
+```bash
+pkill -f "python.*server.py" || pkill -f "python.*simple_server.py" || true
+lsof -ti:3000 | xargs kill -9 2>/dev/null || true
+cd /Users/username/directory/git-workspace/freakinbeats-web-poc && python3 server.py
+```
+
 **No images showing?**
 - Verify the CSV file has `image_uri` data
 - Check browser console for image loading errors
