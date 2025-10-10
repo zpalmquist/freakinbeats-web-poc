@@ -81,19 +81,29 @@ def setup_scheduler(app):
     scheduler.start()
     app.logger.info(f"Scheduler started. Sync interval: {interval_hours} hour(s)")
     
-    # Run initial sync
-    with app.app_context():
-        try:
-            app.logger.info("Running initial Discogs sync...")
-            sync_service = DiscogsSyncService(
-                token=app.config['DISCOGS_TOKEN'],
-                seller_username=app.config['DISCOGS_SELLER_USERNAME'],
-                user_agent=app.config['DISCOGS_USER_AGENT']
-            )
-            stats = sync_service.sync_all_listings()
-            app.logger.info(f"Initial sync completed: {stats}")
-        except Exception as e:
-            app.logger.error(f"Error during initial sync: {e}")
+    # Schedule initial sync to run in background after 5 seconds
+    def initial_sync():
+        """Run initial sync in background."""
+        import time
+        time.sleep(5)  # Wait for server to start
+        with app.app_context():
+            try:
+                app.logger.info("Running initial Discogs sync...")
+                sync_service = DiscogsSyncService(
+                    token=app.config['DISCOGS_TOKEN'],
+                    seller_username=app.config['DISCOGS_SELLER_USERNAME'],
+                    user_agent=app.config['DISCOGS_USER_AGENT']
+                )
+                stats = sync_service.sync_all_listings()
+                app.logger.info(f"Initial sync completed: {stats}")
+            except Exception as e:
+                app.logger.error(f"Error during initial sync: {e}")
+    
+    # Run initial sync in background thread
+    from threading import Thread
+    sync_thread = Thread(target=initial_sync, daemon=True)
+    sync_thread.start()
+    app.logger.info("Initial sync scheduled to run in background...")
     
     # Shut down the scheduler when exiting the app
     atexit.register(lambda: scheduler.shutdown())

@@ -30,12 +30,7 @@ Get your Discogs API token from: https://www.discogs.com/settings/developers
    export DISCOGS_SELLER_USERNAME="your_seller_username"
    ```
 
-3. **(Optional) Migrate existing CSV data**:
-   ```bash
-   python3 migrate_csv_to_db.py
-   ```
-
-4. **Start the server**:
+3. **Start the server**:
    ```bash
    python3 run.py
    ```
@@ -45,7 +40,7 @@ Get your Discogs API token from: https://www.discogs.com/settings/developers
    ./start_server.sh
    ```
 
-5. **Open your browser**:
+4. **Open your browser**:
    ```
    http://localhost:3000
    ```
@@ -56,25 +51,24 @@ The application will automatically sync with Discogs API on startup and then hou
 
 ```
 app/
+├── models/
+│   └── listing.py       # SQLAlchemy models
 ├── routes/
 │   ├── api.py           # API endpoints
 │   └── main.py          # Page routes
 ├── services/
-│   └── inventory_service.py # CSV operations
+│   ├── inventory_service.py    # Database queries
+│   └── discogs_sync_service.py # API sync
 ├── static/
 │   ├── scss/            # SCSS stylesheets
 │   └── js/              # JavaScript modules
 └── templates/           # Jinja2 templates
 
-ingest/
-├── discogs_seller_export.py           # Export script for Discogs data
-├── discogs_seller_export_example_usage.sh
-└── discogs_seller_listings.csv        # CSV data file
-
-config.py              # App configuration (points to ingest/ for CSV)
+config.py              # App configuration
 run.py                 # Flask application entry point
 requirements.txt       # Python dependencies
 start_server.sh        # Quick start script
+migrate_csv_to_db.py   # Optional: Import legacy CSV data
 ```
 
 ## 🗄️ Database & API Integration
@@ -128,9 +122,9 @@ python3 run.py
 
 ## 📚 Documentation
 
-- `MIGRATION_GUIDE.md` - Flask migration details
-- `SCSS_GUIDE.md` - Styling guide
-- `ADMIN_SETUP.md` - Admin panel setup
+- `QUICKSTART.md` - 5-minute setup guide
+- `MIGRATION_ARCHITECTURE.md` - Technical architecture details
+- `MIGRATION_SUMMARY.md` - Complete changelog
 
 ## 🌐 Browser Support
 

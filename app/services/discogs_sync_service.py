@@ -155,7 +155,7 @@ class DiscogsSyncService:
         }
         
         try:
-            response = requests.get(url, headers=self.headers, params=params, timeout=30)
+            response = requests.get(url, headers=self.headers, params=params, timeout=10)
             
             if response.status_code == 401:
                 current_app.logger.error("Authentication error: Invalid Discogs token")
