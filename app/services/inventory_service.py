@@ -1,43 +1,86 @@
-import csv
-import os
-from pathlib import Path
+"""
+Inventory service for managing Discogs listings.
+
+This service provides methods to query and retrieve listings from the database.
+"""
+
 from datetime import datetime
 from typing import List, Optional
+from app.models.listing import Listing
+
 
 class InventoryService:
-    def __init__(self, base_dir: Path, csv_pattern: str):
-        self.base_dir = base_dir
-        self.csv_pattern = csv_pattern
-    
-    def find_csv_file(self) -> Optional[Path]:
-        csv_files = list(self.base_dir.glob(self.csv_pattern))
-        return max(csv_files, key=os.path.getmtime) if csv_files else None
+    """Service for accessing inventory listings from database."""
     
     def get_all_items(self) -> List[dict]:
-        csv_file = self.find_csv_file()
-        if not csv_file or not csv_file.exists():
-            return []
+        """
+        Get all listings from database, sorted by posted date (newest first).
         
-        data = []
-        with open(csv_file, 'r', encoding='utf-8') as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                cleaned_row = {k: v if v.strip() else None for k, v in row.items()}
-                data.append(cleaned_row)
-        
-        data.sort(key=self._parse_timestamp, reverse=True)
-        return data
+        Returns:
+            List of listing dictionaries
+        """
+        listings = Listing.query.order_by(Listing.posted.desc()).all()
+        return [listing.to_dict() for listing in listings]
     
-    def _parse_timestamp(self, item: dict) -> Optional[datetime]:
-        posted = item.get('posted')
-        if not posted:
-            return None
-        try:
-            if posted.endswith(('Z', '+00:00')):
-                return datetime.fromisoformat(posted.replace('Z', '+00:00'))
-            elif '+' in posted or posted.count('-') > 2:
-                return datetime.fromisoformat(posted)
-            else:
-                return datetime.fromisoformat(posted + '+00:00')
-        except (ValueError, TypeError):
-            return None
+    def get_item_by_listing_id(self, listing_id: str) -> Optional[dict]:
+        """
+        Get a single listing by its listing ID.
+        
+        Args:
+            listing_id: The Discogs listing ID
+            
+        Returns:
+            Listing dictionary or None if not found
+        """
+        listing = Listing.query.filter_by(listing_id=listing_id).first()
+        return listing.to_dict() if listing else None
+    
+    def search_items(self, query: str = None, artist: str = None, 
+                    genre: str = None, format_type: str = None) -> List[dict]:
+        """
+        Search listings with optional filters.
+        
+        Args:
+            query: Search query for title or artist
+            artist: Filter by artist name
+            genre: Filter by genre
+            format_type: Filter by format
+            
+        Returns:
+            List of matching listing dictionaries
+        """
+        q = Listing.query
+        
+        if query:
+            q = q.filter(
+                (Listing.release_title.ilike(f'%{query}%')) |
+                (Listing.artist_names.ilike(f'%{query}%'))
+            )
+        
+        if artist:
+            q = q.filter(Listing.artist_names.ilike(f'%{artist}%'))
+        
+        if genre:
+            q = q.filter(Listing.genres.ilike(f'%{genre}%'))
+        
+        if format_type:
+            q = q.filter(Listing.format_names.ilike(f'%{format_type}%'))
+        
+        listings = q.order_by(Listing.posted.desc()).all()
+        return [listing.to_dict() for listing in listings]
+    
+    def get_stats(self) -> dict:
+        """
+        Get inventory statistics.
+        
+        Returns:
+            Dictionary with inventory statistics
+        """
+        total = Listing.query.count()
+        
+        return {
+            'total_listings': total,
+            'last_updated': Listing.query.order_by(
+                Listing.updated_at.desc()
+            ).first().updated_at.isoformat() if total > 0 else None
+        }
