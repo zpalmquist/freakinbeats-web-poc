@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Freakin Beats - Vinyl Collection{% endblock %}
+
+{% block header_content %}
+<p>Freakin' Beats is located in Denver, CO and dedicated to finding all the freaky beats worldwide. We aim to serve the Denver community and USA/Canada at large with beats for any dance floor, or any digger...for whatever they deem necessary. Local pickup/delivery is available for residents in the Denver Metro and surrounding areas.</p>
+<p>Items are not totally guaranteed in stock, we also sell locally to DJ's and at events. We do our best to stay on top of this but it is a challenge to be 100% accurate. With this said we recommend paying the invoice after all records confirmed found. We will always happily refund or exchange if the item is not found.</p>
+{% endblock %}
+
+{% block content %}
+<div class="collage-container">
+    <div class="loading" id="loading">
+        🎵 Loading vinyl collection...
+    </div>
+    
+    <div class="error" id="error" style="display: none;">
+        ❌ Error loading data. Please make sure the CSV file exists and the server is running.
+    </div>
+
+    <div class="collage-grid" id="collage-grid" style="display: none;">
+        <!-- Vinyl items will be dynamically inserted here -->
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/collage.js') }}"></script>
+{% endblock %}

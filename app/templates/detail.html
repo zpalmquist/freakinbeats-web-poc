@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Record Details - Freakin Beats{% endblock %}
+
+{% block header_title %}
+<a href="/" class="back-button">← Back to Shop</a>
+🎵 Freakin Beats
+{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    <div class="loading" id="loading">
+        🎵 Loading record details...
+    </div>
+    
+    <div class="error" id="error" style="display: none;">
+        ❌ Error loading record details. Please try again.
+    </div>
+
+    <div class="detail-content" id="detail-content" style="display: none;">
+        <div class="vinyl-image-container">
+            <div id="vinyl-image-container"></div>
+        </div>
+        
+        <div class="vinyl-info">
+            <div class="vinyl-title" id="vinyl-title"></div>
+            <div class="vinyl-artist" id="vinyl-artist"></div>
+            <div class="vinyl-price" id="vinyl-price"></div>
+            
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <div class="detail-label">Label</div>
+                    <div class="detail-value" id="vinyl-label"></div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Year</div>
+                    <div class="detail-value" id="vinyl-year"></div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Condition</div>
+                    <div class="detail-value" id="vinyl-condition"></div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Sleeve</div>
+                    <div class="detail-value" id="vinyl-sleeve"></div>
+                </div>
+            </div>
+            
+            <div class="detail-item" style="grid-column: 1 / -1;">
+                <div class="detail-label">Comments</div>
+                <div class="detail-value" id="vinyl-comments"></div>
+            </div>
+            
+            <button class="add-to-cart" id="add-to-cart">
+                Add to Cart
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/detail.js') }}"></script>
+{% endblock %}

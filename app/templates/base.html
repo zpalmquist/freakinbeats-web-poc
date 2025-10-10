@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Freakin Beats{% endblock %}</title>
+    {% assets "scss_all" %}
+    <link rel="stylesheet" href="{{ ASSET_URL }}">
+    {% endassets %}
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="header">
+        <div class="nav">
+            <a href="/">Home</a>
+            <a href="/cart" class="cart-icon">
+                🛒 Cart
+                <span class="cart-count" id="cart-count">0</span>
+            </a>
+        </div>
+        <h1>{% block header_title %}🎵 Freakin Beats{% endblock %}</h1>
+        {% block header_content %}{% endblock %}
+    </div>
+
+    {% block content %}{% endblock %}
+
+    <script src="{{ url_for('static', filename='js/cart-utils.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

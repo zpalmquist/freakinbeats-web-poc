@@ -1,0 +1,32 @@
+// Colors
+$gradient-start: #55f860;
+$gradient-end: #34abff;
+$text-primary: #000;
+$text-white: #fff;
+$error-color: #ef4444;
+$success-color: #000000;
+
+// Spacing
+$spacing-xs: 5px;
+$spacing-sm: 10px;
+$spacing-md: 15px;
+$spacing-lg: 20px;
+$spacing-xl: 30px;
+
+// Border radius
+$radius-sm: 10px;
+$radius-md: 15px;
+$radius-lg: 20px;
+$radius-pill: 25px;
+
+// Glass effect
+@mixin glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@mixin glass-hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}

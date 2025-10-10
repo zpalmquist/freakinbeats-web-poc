@@ -1,0 +1,121 @@
+@import 'variables';
+@import 'base';
+@import 'vinyl';
+
+.back-button {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: white;
+  text-decoration: none;
+  padding: $spacing-sm $spacing-lg;
+  @include glass;
+  border-radius: $radius-pill;
+  transition: all 0.3s ease;
+
+  &:hover {
+    @include glass-hover;
+  }
+}
+
+.detail-container {
+  @include glass;
+  border-radius: $radius-lg;
+  padding: $spacing-xl;
+  max-width: 800px;
+  margin: 0 auto;
+  
+  .vinyl-image {
+    max-width: 400px;
+    height: 400px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  }
+  
+  .vinyl-title {
+    font-size: 2rem;
+    margin-bottom: $spacing-sm;
+  }
+  
+  .vinyl-artist {
+    font-size: 1.3rem;
+    margin-bottom: $spacing-lg;
+  }
+  
+  .vinyl-price {
+    font-size: 2.5rem;
+    color: $success-color;
+    margin-bottom: $spacing-lg;
+  }
+}
+
+.detail-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-xl;
+  align-items: start;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-md;
+  margin-bottom: $spacing-xl;
+}
+
+.detail-item {
+  @include glass;
+  padding: $spacing-md;
+  border-radius: $radius-sm;
+}
+
+.detail-label {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  margin-bottom: $spacing-xs;
+}
+
+.detail-value {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.add-to-cart {
+  background: $success-color;
+  color: white;
+  border: none;
+  padding: $spacing-md $spacing-xl;
+  border-radius: $radius-pill;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+
+  &:hover {
+    background: darken($success-color, 10%);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba($success-color, 0.4);
+  }
+
+  &:disabled {
+    background: #6b7280;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .detail-content {
+    grid-template-columns: 1fr;
+    gap: $spacing-lg;
+  }
+  
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .detail-container .vinyl-image {
+    height: 300px;
+  }
+}
