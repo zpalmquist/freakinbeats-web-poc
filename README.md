@@ -1,3 +1,8 @@
+<img width="1177" height="1019" alt="image" src="https://github.com/user-attachments/assets/21ce844f-067a-4413-9b12-cd1525e8b220" />
+<img width="1179" height="1019" alt="image" src="https://github.com/user-attachments/assets/c0d51d73-59ac-48dd-af09-1582769f7c93" />
+<img width="1183" height="1025" alt="image" src="https://github.com/user-attachments/assets/70ed6de1-f5ea-4c72-bf34-1028b3d841ba" />
+
+
 # freakinbeats-web-poc
 freakinbeats.com
 
