@@ -5,14 +5,15 @@ echo "🎵 Discogs Vinyl Collection Collage"
 echo "=================================="
 echo ""
 
-# Check if CSV file exists
-if [ ! -f "discogs_seller_listings.csv" ]; then
-    echo "❌ No Discogs CSV file found!"
+# Check if CSV file exists in ingest directory
+if [ ! -f "ingest/discogs_seller_listings.csv" ]; then
+    echo "❌ No Discogs CSV file found in ingest/ directory!"
     echo "Please run the discogs_seller_export.py script first."
     echo ""
     echo "To export your data:"
-    echo "  cd .."
+    echo "  cd ingest"
     echo "  python3 discogs_seller_export.py --seller freakin_beats"
+    echo "  cd .."
     exit 1
 fi
 

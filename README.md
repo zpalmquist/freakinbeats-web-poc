@@ -13,7 +13,12 @@ A modular Flask ecommerce application for displaying and managing Discogs vinyl 
 
 ## 🚀 Quick Start
 
-1. **Make sure you have a Discogs CSV file** (run `discogs_seller_export.py` first)
+1. **Export your Discogs listings** (run the export script in `ingest/` directory):
+   ```bash
+   cd ingest
+   python3 discogs_seller_export.py --seller YOUR_SELLER_NAME
+   cd ..
+   ```
 
 2. **Install dependencies**:
    ```bash
@@ -23,6 +28,11 @@ A modular Flask ecommerce application for displaying and managing Discogs vinyl 
 3. **Start the server**:
    ```bash
    python3 run.py
+   ```
+   
+   Or use the quick start script:
+   ```bash
+   ./start_server.sh
    ```
 
 4. **Open your browser**:
@@ -43,6 +53,16 @@ app/
 │   ├── scss/            # SCSS stylesheets
 │   └── js/              # JavaScript modules
 └── templates/           # Jinja2 templates
+
+ingest/
+├── discogs_seller_export.py           # Export script for Discogs data
+├── discogs_seller_export_example_usage.sh
+└── discogs_seller_listings.csv        # CSV data file
+
+config.py              # App configuration (points to ingest/ for CSV)
+run.py                 # Flask application entry point
+requirements.txt       # Python dependencies
+start_server.sh        # Quick start script
 ```
 
 ## 🗄️ Database Migration (Optional)
