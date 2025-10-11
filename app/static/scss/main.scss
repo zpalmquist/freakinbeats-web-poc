@@ -4,9 +4,7 @@
 @import 'checkout';
 
 .collage-container {
-  @include glass;
-  border-radius: $radius-lg;
-  padding: $spacing-xl;
+  @include glass-container;
 }
 
 .collage-grid {
@@ -16,6 +14,7 @@
   max-height: 80vh;
   overflow-y: auto;
   padding: $spacing-sm;
+  @include custom-scrollbar;
 }
 
 .vinyl-item {
@@ -23,16 +22,16 @@
   @include glass;
   border-radius: $radius-md;
   overflow: hidden;
-  transition: all 0.3s ease;
   border: 2px solid transparent;
   cursor: pointer;
+  @include hover-lift;
   display: flex;
   flex-direction: column;
   min-height: 320px; /* Ensure consistent height for Firefox */
 
   &:hover {
-    transform: scale(1.05);
     border-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.05);
     box-shadow: 0 10px 25px rgba(0,0,0,0.3);
   }
   
@@ -43,6 +42,7 @@
   }
   
   .vinyl-info {
+    @include vinyl-info-text;
     padding: $spacing-md;
     flex: 1; /* Take remaining space */
     display: flex;
@@ -52,23 +52,7 @@
   .vinyl-title {
     font-size: 0.9rem;
     margin-bottom: $spacing-xs;
-    /* Use a more Firefox-friendly approach for text truncation */
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
-    line-height: 1.2;
-    max-height: 2.4em;
-    word-wrap: break-word;
-    
-    /* Firefox fallback */
-    @supports not (-webkit-line-clamp: 2) {
-      display: block;
-      max-height: 2.4em;
-      overflow: hidden;
-    }
+    @include text-truncate(2);
   }
   
   .vinyl-artist {

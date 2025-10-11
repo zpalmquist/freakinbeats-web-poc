@@ -11,11 +11,38 @@ def get_data():
     data = service.get_all_items()
     return jsonify(data)
 
+@bp.route('/data/<int:id>')
+def get_listing_by_id(id):
+    """Get a specific listing by database ID."""
+    service = InventoryService()
+    listing = service.get_item_by_id(id)
+    if listing:
+        return jsonify(listing)
+    return jsonify({'error': 'Listing not found'}), 404
+
 @bp.route('/data/<listing_id>')
 def get_listing(listing_id):
-    """Get a specific listing by ID."""
+    """Get a specific listing by Discogs listing ID."""
     service = InventoryService()
     listing = service.get_item_by_listing_id(listing_id)
+    if listing:
+        return jsonify(listing)
+    return jsonify({'error': 'Listing not found'}), 404
+
+@bp.route('/detail/<int:id>')
+def get_listing_detail_by_id(id):
+    """Get detailed listing information including videos by database ID."""
+    service = InventoryService()
+    listing = service.get_item_with_videos_by_id(id)
+    if listing:
+        return jsonify(listing)
+    return jsonify({'error': 'Listing not found'}), 404
+
+@bp.route('/detail/<listing_id>')
+def get_listing_detail(listing_id):
+    """Get detailed listing information including videos by Discogs listing ID."""
+    service = InventoryService()
+    listing = service.get_item_with_videos(listing_id)
     if listing:
         return jsonify(listing)
     return jsonify({'error': 'Listing not found'}), 404
