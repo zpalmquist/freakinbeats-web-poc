@@ -2,6 +2,8 @@ class VinylDetail {
     constructor() {
         this.item = null;
         this.videos = [];
+        this.labelUrls = [];
+        this.labelOverviews = {};
         this.currentVideoIndex = 0;
         this.id = this.getIdFromUrl();
         this.loadData();
@@ -21,6 +23,8 @@ class VinylDetail {
                 const detailData = await detailResponse.json();
                 this.item = detailData;
                 this.videos = detailData.videos || [];
+                this.labelUrls = detailData.label_urls || [];
+                this.labelOverviews = detailData.label_overviews || {};
                 this.renderDetail();
                 return;
             }
@@ -31,6 +35,8 @@ class VinylDetail {
                 const basicData = await basicResponse.json();
                 this.item = basicData;
                 this.videos = [];
+                this.labelUrls = [];
+                this.labelOverviews = {};
                 this.renderDetail();
             } else {
                 this.showError();
@@ -65,6 +71,9 @@ class VinylDetail {
 
         // Render video player if videos are available
         this.renderVideoPlayer();
+        
+        // Render label info if label URLs are available
+        this.renderLabelInfo();
 
         document.getElementById('add-to-cart').addEventListener('click', () => this.addToCart());
     }
@@ -159,6 +168,103 @@ class VinylDetail {
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;
         return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    renderLabelInfo() {
+        const labelContainer = document.getElementById('label-info-container');
+        const detailContent = document.getElementById('detail-content');
+        const detailContainer = document.querySelector('.detail-container');
+        
+        if (this.labelUrls && this.labelUrls.length > 0) {
+            labelContainer.style.display = 'block';
+            detailContent.classList.add('has-label-info');
+            detailContainer.classList.add('has-label-info');
+            
+            // Create label links
+            this.renderLabelLinks();
+        } else {
+            labelContainer.style.display = 'none';
+            detailContent.classList.remove('has-label-info');
+            detailContainer.classList.remove('has-label-info');
+        }
+    }
+
+    renderLabelLinks() {
+        const container = document.getElementById('label-links');
+        container.innerHTML = '';
+        
+        // Render AI overviews first if available
+        if (this.labelOverviews && Object.keys(this.labelOverviews).length > 0) {
+            for (const [labelName, overview] of Object.entries(this.labelOverviews)) {
+                const overviewDiv = this.createLabelOverview(labelName, overview);
+                container.appendChild(overviewDiv);
+            }
+        }
+        
+        // Then render the URL links
+        this.labelUrls.forEach((linkInfo) => {
+            const link = this.createLabelLink(linkInfo);
+            container.appendChild(link);
+        });
+    }
+    
+    createLabelOverview(labelName, overview) {
+        const div = document.createElement('div');
+        div.className = 'label-overview';
+        
+        // Only show label name if there are multiple labels
+        const hasMultipleLabels = Object.keys(this.labelOverviews).length > 1;
+        const labelHeader = hasMultipleLabels ? `<div class="label-overview-name">${labelName}</div>` : '';
+        
+        // Convert markdown formatting to HTML
+        const formattedOverview = this.markdownToHtml(overview);
+        
+        div.innerHTML = `
+            ${labelHeader}
+            <div class="label-overview-text">${formattedOverview}</div>
+        `;
+        
+        return div;
+    }
+    
+    markdownToHtml(text) {
+        if (!text) return '';
+        
+        // Convert markdown formatting to HTML
+        let html = text;
+        
+        // Bold: **text** -> <strong>text</strong>
+        html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        
+        // Italic: *text* -> <em>text</em> (but not list bullets)
+        html = html.replace(/(?<![\*\n])(\s)\*([^\*\n]+?)\*(?!\*)/g, '$1<em>$2</em>');
+        
+        // Underline: __text__ -> <u>text</u>
+        html = html.replace(/__(.+?)__/g, '<u>$1</u>');
+        
+        // Line breaks
+        html = html.replace(/\n/g, '<br>');
+        
+        return html;
+    }
+
+    createLabelLink(linkInfo) {
+        const div = document.createElement('div');
+        div.className = 'label-link';
+        
+        div.innerHTML = `
+            <div class="label-link-content">
+                <div class="label-link-title">${linkInfo.title}</div>
+                <div class="label-link-description">${linkInfo.description}</div>
+            </div>
+            <div class="label-link-arrow">→</div>
+        `;
+        
+        div.addEventListener('click', () => {
+            window.open(linkInfo.url, '_blank', 'noopener,noreferrer');
+        });
+        
+        return div;
     }
 
     addToCart() {

@@ -9,6 +9,8 @@ from datetime import datetime
 from typing import List, Optional, Dict
 from flask import current_app
 from app.models.listing import Listing
+from app.models.label_info import LabelInfo
+from app.extensions import db
 
 
 class InventoryService:
@@ -123,6 +125,12 @@ class InventoryService:
             result['videos'] = videos
         else:
             result['videos'] = []
+        
+        # Add label reference URLs
+        result['label_urls'] = self._generate_label_urls(listing.label_names, listing.primary_label)
+        
+        # Add AI-generated label overviews
+        result['label_overviews'] = self._get_label_overviews(listing.label_names)
             
         return result
     
@@ -149,6 +157,12 @@ class InventoryService:
             result['videos'] = videos
         else:
             result['videos'] = []
+        
+        # Add label reference URLs
+        result['label_urls'] = self._generate_label_urls(listing.label_names, listing.primary_label)
+        
+        # Add AI-generated label overviews
+        result['label_overviews'] = self._get_label_overviews(listing.label_names)
             
         return result
     
@@ -205,3 +219,166 @@ class InventoryService:
         except Exception as e:
             current_app.logger.error(f'Error fetching videos for release {release_id}: {e}')
             return []
+    
+    def _generate_label_urls(self, label_names: str, primary_label: str) -> List[Dict]:
+        """
+        Generate reference URLs for labels. If multiple labels are present (comma-separated),
+        generates URLs for each label.
+        
+        Args:
+            label_names: Full label names string (comma-separated if multiple)
+            primary_label: Primary label name (used as fallback)
+            
+        Returns:
+            List of reference URL dictionaries (3 URLs per label)
+        """
+        import urllib.parse
+        
+        if not label_names or label_names == 'Unknown':
+            return []
+        
+        # Parse comma-separated labels and remove duplicates while preserving order
+        labels = []
+        seen = set()
+        for label in label_names.split(','):
+            label_clean = label.strip()
+            if label_clean and label_clean not in seen:
+                labels.append(label_clean)
+                seen.add(label_clean)
+        
+        if not labels:
+            return []
+        
+        urls = []
+        
+        # Generate 3 URLs for each unique label
+        for label_clean in labels:
+            label_encoded = urllib.parse.quote(label_clean)
+            label_encoded_plus = urllib.parse.quote_plus(label_clean)
+            
+            # Add label name prefix if there are multiple labels
+            label_prefix = f"{label_clean} - " if len(labels) > 1 else ""
+            
+            urls.extend([
+                {
+                    'title': f'{label_prefix}Discogs Label Page',
+                    'url': f'https://www.discogs.com/search/?q={label_encoded}&type=label',
+                    'description': f'Search for {label_clean} on Discogs'
+                },
+                {
+                    'title': f'{label_prefix}Bandcamp Search',
+                    'url': f'https://bandcamp.com/search?q={label_encoded_plus}&item_type=b',
+                    'description': f'Find {label_clean} on Bandcamp'
+                },
+                {
+                    'title': f'{label_prefix}Google Search',
+                    'url': f'https://www.google.com/search?q={label_encoded}+record+label',
+                    'description': f'Search for {label_clean} information'
+                }
+            ])
+        
+        return urls
+    
+    def _get_label_overviews(self, label_names: str) -> Dict[str, str]:
+        """
+        Get AI-generated overviews for labels, using cache when available.
+        
+        Args:
+            label_names: Comma-separated label names
+            
+        Returns:
+            Dictionary mapping label names to their AI-generated overviews
+        """
+        if not label_names or label_names == 'Unknown':
+            return {}
+        
+        # Check if AI overviews are enabled
+        if not current_app.config.get('ENABLE_AI_OVERVIEWS', True):
+            return {}
+        
+        # Parse unique labels
+        labels = []
+        seen = set()
+        for label in label_names.split(','):
+            label_clean = label.strip()
+            if label_clean and label_clean not in seen:
+                labels.append(label_clean)
+                seen.add(label_clean)
+        
+        if not labels:
+            return {}
+        
+        overviews = {}
+        labels_to_generate = []
+        
+        # Check cache for each label
+        for label_name in labels:
+            cached_info = LabelInfo.query.filter_by(
+                label_name=label_name,
+                cache_valid=True
+            ).first()
+            
+            if cached_info and cached_info.overview:
+                overviews[label_name] = cached_info.overview
+            else:
+                labels_to_generate.append(label_name)
+        
+        # Generate overviews for uncached labels
+        if labels_to_generate:
+            from app.services.gemini_service import GeminiService
+            gemini = GeminiService()
+            
+            if gemini.is_available():
+                for label_name in labels_to_generate:
+                    try:
+                        overview = gemini.generate_label_overview(label_name)
+                        
+                        if overview:
+                            overviews[label_name] = overview
+                            
+                            # Cache the result
+                            self._cache_label_overview(label_name, overview)
+                        else:
+                            current_app.logger.warning(f"Failed to generate overview for: {label_name}")
+                            
+                    except Exception as e:
+                        current_app.logger.error(f"Error generating overview for {label_name}: {e}")
+            else:
+                current_app.logger.warning("Gemini service not available. Skipping AI overviews.")
+        
+        return overviews
+    
+    def _cache_label_overview(self, label_name: str, overview: str) -> None:
+        """
+        Cache a label overview in the database.
+        
+        Args:
+            label_name: Name of the label
+            overview: Generated overview text
+        """
+        try:
+            # Check if entry exists
+            label_info = LabelInfo.query.filter_by(label_name=label_name).first()
+            
+            if label_info:
+                # Update existing
+                label_info.overview = overview
+                label_info.cache_valid = True
+                label_info.generation_error = None
+                label_info.updated_at = datetime.utcnow()
+            else:
+                # Create new
+                label_info = LabelInfo(
+                    label_name=label_name,
+                    overview=overview,
+                    generated_by='gemini-1.5-flash',
+                    cache_valid=True
+                )
+                db.session.add(label_info)
+            
+            db.session.commit()
+            current_app.logger.info(f"Cached overview for label: {label_name}")
+            
+        except Exception as e:
+            db.session.rollback()
+            current_app.logger.error(f"Error caching overview for {label_name}: {e}")
