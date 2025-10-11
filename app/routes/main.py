@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, jsonify
 from app.services.inventory_service import InventoryService
+from app.services.cart_service import CartService
 
 bp = Blueprint('main', __name__)
 
@@ -28,39 +29,47 @@ def validate_checkout():
         if not cart_data or not cart_data.get('items'):
             return jsonify({'error': 'Cart is empty'}), 400
         
-        inventory_service = InventoryService()
-        validated_items = []
-        total = 0
+        cart_service = CartService()
         
-        for item in cart_data['items']:
-            listing_id = item.get('listing_id')
-            quantity = item.get('quantity', 1)
-            
-            # Validate item still exists and get current price
-            listing = inventory_service.get_item_by_listing_id(listing_id)
-            if not listing:
-                return jsonify({'error': f'Item {listing_id} no longer available'}), 400
-            
-            # Calculate item total
-            price = float(listing.get('price', 0))
-            item_total = price * quantity
-            total += item_total
-            
-            validated_items.append({
-                'listing_id': listing_id,
-                'title': listing.get('title'),
-                'artist': listing.get('artist'),
-                'price': price,
-                'quantity': quantity,
-                'item_total': item_total,
-                'currency': listing.get('currency', '$')
-            })
+        # Use CartService for validation
+        is_valid, validated_items, total_price, currency = cart_service.validate_cart(cart_data['items'])
+        
+        if not is_valid:
+            return jsonify({'error': 'Cart validation failed'}), 400
+        
+        # Get cart summary with tax, shipping, etc.
+        cart_summary = cart_service.calculate_cart_summary(validated_items)
         
         return jsonify({
             'items': validated_items,
-            'total': total,
-            'currency': validated_items[0]['currency'] if validated_items else '$'
+            'summary': cart_summary,
+            'is_valid': True
         })
         
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 400
     except Exception as e:
-        return jsonify({'error': 'Failed to validate cart'}), 500
+        return jsonify({'error': f'Failed to validate cart: {str(e)}'}), 500
+
+@bp.route('/checkout/prepare-payment', methods=['POST'])
+def prepare_payment():
+    """Prepare cart data for Stripe payment processing."""
+    try:
+        cart_data = request.get_json()
+        if not cart_data or not cart_data.get('items'):
+            return jsonify({'error': 'Cart is empty'}), 400
+        
+        cart_service = CartService()
+        
+        # Get Stripe-formatted cart data
+        stripe_data = cart_service.get_cart_for_stripe(cart_data['items'])
+        
+        return jsonify({
+            'stripe_data': stripe_data,
+            'success': True
+        })
+        
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 400
+    except Exception as e:
+        return jsonify({'error': f'Failed to prepare payment: {str(e)}'}), 500
