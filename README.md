@@ -192,12 +192,54 @@ python3 run.py
 
 ## 📚 Documentation
 
-- `QUICKSTART.md` - 5-minute setup guide
-- `MIGRATION_ARCHITECTURE.md` - Technical architecture details
-- `MIGRATION_SUMMARY.md` - Complete changelog
-- `ACCESS_LOGGING.md` - Access logging implementation details
+All documentation has been organized in the `docs/` directory:
+- `docs/QUICKSTART.md` - 5-minute setup guide
+- `docs/MIGRATION_ARCHITECTURE.md` - Technical architecture details
+- `docs/MIGRATION_SUMMARY.md` - Complete changelog
+- `docs/ACCESS_LOGGING.md` - Access logging implementation details
+- `docs/AI_LABEL_OVERVIEWS.md` - AI label overview feature documentation
+- `docs/SETUP_AI_OVERVIEWS.md` - Quick setup guide for Gemini AI
+
+Utility scripts are in the `utils/` directory:
+- `utils/migrate_csv_to_db.py` - Import listings from CSV files
+- `utils/sync_discogs.py` - Manually sync with Discogs API
+- `utils/test_discogs_token.py` - Test Discogs API token validity
 
 ## 📦 Recent Changes
+
+### AI-Powered Label Info Section ([PR #13](https://github.com/SeaBlooms/freakinbeats-web-poc/pull/13))
+
+**Added:**
+- ✅ AI-generated label overviews using Google Gemini API
+- ✅ Label Info section on product detail pages
+- ✅ Reference links for each label (Discogs, Bandcamp, Google Search)
+- ✅ Multi-label support with automatic deduplication
+- ✅ Database caching system for AI-generated content
+- ✅ `LabelInfo` model for persistent label overview storage
+- ✅ `GeminiService` for AI integration with safety filters
+- ✅ Horizontal button layout (3 buttons per row, 33% width each)
+- ✅ Markdown formatting support for AI responses
+- ✅ Comprehensive test suite (53 new tests)
+- ✅ Utility scripts for token testing and Discogs sync
+- ✅ Documentation organized into `docs/` directory
+
+**Technical Details:**
+- Gemini AI generates concise 4-sentence overviews about record labels
+- Intelligent caching minimizes API costs (generate once, use forever)
+- Multi-label listings display interleaved: Overview → URLs for each label
+- Graceful fallback when AI is unavailable or content is blocked
+- Cost-effective: ~$0.0003 per unique label with free tier (1,500 requests/day)
+- 77 tests passing for complete coverage of new features
+- Clean project organization with `docs/` and `utils/` directories
+
+**Configuration:**
+```bash
+# Required for AI overviews (optional feature)
+export GEMINI_API_KEY="your_gemini_api_key"
+export ENABLE_AI_OVERVIEWS=true
+```
+
+Get your free Gemini API key from: https://ai.google.dev/
 
 ### YouTube Player Integration ([PR #11](https://github.com/SeaBlooms/freakinbeats-web-poc/pull/11))
 
