@@ -12,20 +12,7 @@
 }
 
 .vinyl-info {
-  color: white;
-}
-
-.vinyl-title {
-  font-weight: bold;
-  line-height: 1.2;
-}
-
-.vinyl-artist {
-  opacity: 0.8;
-}
-
-.vinyl-price {
-  font-weight: bold;
+  @include vinyl-info-text;
 }
 
 .no-image {

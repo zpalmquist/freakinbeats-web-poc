@@ -19,11 +19,14 @@
 }
 
 .detail-container {
-  @include glass;
-  border-radius: $radius-lg;
-  padding: $spacing-xl;
+  @include glass-container;
   max-width: 800px;
   margin: 0 auto;
+  
+  // Allow wider container when videos are present
+  &.has-videos {
+    max-width: 1200px;
+  }
   
   .vinyl-image {
     max-width: 400px;
@@ -51,8 +54,31 @@
 .detail-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  grid-template-areas: 
+    "image details";
   gap: $spacing-xl;
   align-items: start;
+  
+  // When videos are present, switch to 3-column layout with player on left
+  &.has-videos {
+    grid-template-columns: 350px 400px 1fr;
+    grid-template-areas: 
+      "player image details";
+    max-width: 1200px;
+    gap: $spacing-lg;
+  }
+  
+  .vinyl-image-container {
+    grid-area: image;
+  }
+  
+  .vinyl-info {
+    grid-area: details;
+  }
+  
+  .video-player-container {
+    grid-area: player;
+  }
 }
 
 .detail-grid {
@@ -63,7 +89,7 @@
 }
 
 .detail-item {
-  @include glass;
+  @include glass-card;
   padding: $spacing-md;
   border-radius: $radius-sm;
 }
@@ -80,35 +106,118 @@
 }
 
 .add-to-cart {
-  background: $success-color;
-  color: white;
-  border: none;
-  padding: $spacing-md $spacing-xl;
-  border-radius: $radius-pill;
-  font-size: 1.2rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  @include button-primary;
   width: 100%;
+}
 
-  &:hover {
-    background: darken($success-color, 10%);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba($success-color, 0.4);
+// Video Player Styles
+.video-player-container {
+  @include glass-container;
+  padding: $spacing-lg; // Slightly smaller padding than default container
+  
+  .video-player-header {
+    margin-bottom: $spacing-md;
+    
+    h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      color: $text-white;
+      text-align: center;
+    }
   }
+  
+  .main-video {
+    margin-bottom: $spacing-md;
+    border-radius: $radius-sm;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    
+    iframe {
+      border-radius: $radius-sm;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16/9; // Modern CSS for responsive video
+    }
+  }
+  
+  .video-thumbnails {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+    max-height: 250px; // Slightly reduced height
+    overflow-y: auto;
+    @include custom-scrollbar;
+  }
+  
+  .video-thumbnail {
+    display: flex;
+    align-items: center;
+    padding: $spacing-sm;
+    @include glass;
+    border-radius: $radius-sm;
+    cursor: pointer;
+    @include hover-lift;
+    
+    &.active {
+      background: rgba($primary-color, 0.3);
+      border: 1px solid $primary-color;
+    }
+    
+    .thumb-image {
+      width: 60px;
+      height: 45px;
+      object-fit: cover;
+      border-radius: $radius-xs;
+      margin-right: $spacing-sm;
+    }
+    
+    .thumb-info {
+      flex: 1;
+      
+      .thumb-title {
+        font-size: 0.9rem;
+        font-weight: bold;
+        margin-bottom: $spacing-xs;
+        line-height: 1.2;
+        @include text-truncate(2);
+      }
+      
+      .thumb-duration {
+        font-size: 0.8rem;
+        opacity: 0.7;
+      }
+    }
+  }
+}
 
-  &:disabled {
-    background: #6b7280;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
+// Responsive breakpoints using modern CSS
+@media (max-width: 1024px) {
+  .detail-content {
+    &.has-videos {
+      grid-template-columns: 1fr 1fr;
+      grid-template-areas: 
+        "image details"
+        "player player";
+      max-width: 800px;
+    }
   }
 }
 
 @media (max-width: 768px) {
   .detail-content {
     grid-template-columns: 1fr;
+    grid-template-areas: 
+      "image"
+      "details";
     gap: $spacing-lg;
+    
+    &.has-videos {
+      grid-template-columns: 1fr;
+      grid-template-areas: 
+        "image"
+        "details" 
+        "player";
+    }
   }
   
   .detail-grid {
@@ -117,5 +226,15 @@
   
   .detail-container .vinyl-image {
     height: 300px;
+  }
+  
+  .video-player-container {
+    .main-video iframe {
+      height: 200px;
+    }
+    
+    .video-thumbnails {
+      max-height: 200px;
+    }
   }
 }

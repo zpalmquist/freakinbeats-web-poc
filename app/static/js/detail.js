@@ -1,11 +1,13 @@
 class VinylDetail {
     constructor() {
         this.item = null;
-        this.itemIndex = this.getItemIndexFromUrl();
+        this.videos = [];
+        this.currentVideoIndex = 0;
+        this.id = this.getIdFromUrl();
         this.loadData();
     }
 
-    getItemIndexFromUrl() {
+    getIdFromUrl() {
         const path = window.location.pathname;
         const match = path.match(/\/detail\/(\d+)/);
         return match ? parseInt(match[1]) : null;
@@ -13,12 +15,22 @@ class VinylDetail {
 
     async loadData() {
         try {
-            const response = await fetch('/api/data');
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            const data = await response.json();
+            // Try to get detailed data with videos using the database ID
+            const detailResponse = await fetch(`/api/detail/${this.id + 1}`);
+            if (detailResponse.ok) {
+                const detailData = await detailResponse.json();
+                this.item = detailData;
+                this.videos = detailData.videos || [];
+                this.renderDetail();
+                return;
+            }
             
-            if (this.itemIndex !== null && data[this.itemIndex]) {
-                this.item = data[this.itemIndex];
+            // Fallback to basic listing data
+            const basicResponse = await fetch(`/api/data/${this.id}`);
+            if (basicResponse.ok) {
+                const basicData = await basicResponse.json();
+                this.item = basicData;
+                this.videos = [];
                 this.renderDetail();
             } else {
                 this.showError();
@@ -51,18 +63,114 @@ class VinylDetail {
             imageContainer.innerHTML = '<div class="vinyl-image no-image">No Image Available</div>';
         }
 
+        // Render video player if videos are available
+        this.renderVideoPlayer();
+
         document.getElementById('add-to-cart').addEventListener('click', () => this.addToCart());
+    }
+
+    renderVideoPlayer() {
+        const videoContainer = document.getElementById('video-player-container');
+        const detailContent = document.getElementById('detail-content');
+        const detailContainer = document.querySelector('.detail-container');
+        
+        if (this.videos && this.videos.length > 0) {
+            videoContainer.style.display = 'block';
+            detailContent.classList.add('has-videos');
+            detailContainer.classList.add('has-videos');
+            
+            // Set up main video
+            this.loadVideo(0);
+            
+            // Create thumbnails
+            this.renderVideoThumbnails();
+        } else {
+            videoContainer.style.display = 'none';
+            detailContent.classList.remove('has-videos');
+            detailContainer.classList.remove('has-videos');
+        }
+    }
+
+    loadVideo(index) {
+        if (!this.videos || !this.videos[index]) return;
+        
+        const video = this.videos[index];
+        const iframe = document.getElementById('main-video-iframe');
+        
+        // Convert YouTube URL to embed URL
+        const embedUrl = `https://www.youtube.com/embed/${video.youtube_id}`;
+        iframe.src = embedUrl;
+        
+        this.currentVideoIndex = index;
+        this.updateActiveThumbnail();
+    }
+
+    renderVideoThumbnails() {
+        const container = document.getElementById('video-thumbnails');
+        
+        if (!this.videos || this.videos.length <= 1) {
+            container.style.display = 'none';
+            return;
+        }
+        
+        container.style.display = 'flex';
+        container.innerHTML = '';
+        
+        this.videos.forEach((video, index) => {
+            const thumbnail = this.createVideoThumbnail(video, index);
+            container.appendChild(thumbnail);
+        });
+    }
+
+    createVideoThumbnail(video, index) {
+        const div = document.createElement('div');
+        div.className = 'video-thumbnail';
+        div.dataset.index = index;
+        
+        // Format duration
+        const duration = this.formatDuration(video.duration);
+        
+        div.innerHTML = `
+            <img src="${video.thumbnail}" alt="${video.title}" class="thumb-image" loading="lazy">
+            <div class="thumb-info">
+                <div class="thumb-title">${video.title || 'Untitled'}</div>
+                ${duration ? `<div class="thumb-duration">${duration}</div>` : ''}
+            </div>
+        `;
+        
+        div.addEventListener('click', () => this.loadVideo(index));
+        
+        return div;
+    }
+
+    updateActiveThumbnail() {
+        document.querySelectorAll('.video-thumbnail').forEach((thumb, index) => {
+            if (index === this.currentVideoIndex) {
+                thumb.classList.add('active');
+            } else {
+                thumb.classList.remove('active');
+            }
+        });
+    }
+
+    formatDuration(seconds) {
+        if (!seconds || seconds === 0) return '';
+        
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
     }
 
     addToCart() {
         const cart = CartUtils.getCart();
-        const existingItem = cart.find(item => item.index === this.itemIndex);
+        const existingItem = cart.find(item => item.id === this.id);
         
         if (existingItem) {
             existingItem.quantity += 1;
         } else {
             cart.push({
-                index: this.itemIndex,
+                id: this.id,
+                listing_id: this.item.listing_id,
                 title: this.item.release_title || 'Unknown Title',
                 artist: this.item.artist_names || 'Unknown Artist',
                 price: parseFloat(this.item.price_value) || 0,

@@ -2,9 +2,7 @@
 @import 'base';
 
 .cart-container {
-  @include glass;
-  border-radius: $radius-lg;
-  padding: $spacing-xl;
+  @include glass-container;
   max-width: 1000px;
   margin: 0 auto;
 }
@@ -17,9 +15,7 @@
 }
 
 .cart-item {
-  @include glass;
-  border-radius: $radius-md;
-  padding: $spacing-lg;
+  @include glass-card;
   display: grid;
   grid-template-columns: 100px 1fr auto auto;
   gap: $spacing-lg;
@@ -34,7 +30,7 @@
 }
 
 .cart-item-info {
-  color: white;
+  @include vinyl-info-text;
 }
 
 .cart-item-title {
@@ -65,49 +61,15 @@
 }
 
 .quantity-btn {
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  color: white;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  transition: all 0.3s ease;
-
-  &:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.3);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
+  @include button-circular;
 }
 
 .remove-btn {
-  background: $error-color;
-  border: none;
-  color: white;
-  padding: 8px 12px;
-  border-radius: $radius-lg;
-  cursor: pointer;
-  font-size: 0.8rem;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background: darken($error-color, 10%);
-    transform: translateY(-1px);
-  }
+  @include button-danger;
 }
 
 .cart-summary {
-  @include glass;
-  border-radius: $radius-md;
-  padding: $spacing-lg;
+  @include glass-card;
   color: white;
 }
 
@@ -145,21 +107,7 @@
 }
 
 .shop-btn {
-  background: $success-color;
-  color: white;
-  text-decoration: none;
-  padding: $spacing-md $spacing-xl;
-  border-radius: $radius-pill;
-  font-size: 1.2rem;
-  font-weight: bold;
-  display: inline-block;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background: darken($success-color, 10%);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba($success-color, 0.4);
-  }
+  @include button-primary;
 }
 
 @media (max-width: 768px) {
