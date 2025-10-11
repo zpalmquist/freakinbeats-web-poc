@@ -1,4 +1,6 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request, jsonify
+from app.services.inventory_service import InventoryService
+from app.services.cart_service import CartService
 
 bp = Blueprint('main', __name__)
 
@@ -13,8 +15,6 @@ def cart():
 @bp.route('/detail/<listing_id>')
 def detail(listing_id):
     return render_template('detail.html')
-<<<<<<< Updated upstream
-=======
 
 @bp.route('/checkout')
 def checkout():
@@ -75,4 +75,3 @@ def prepare_payment():
         return jsonify({'error': str(e)}), 400
     except Exception as e:
         return jsonify({'error': f'Failed to prepare payment: {str(e)}'}), 500
->>>>>>> Stashed changes

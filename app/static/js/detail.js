@@ -55,24 +55,8 @@ class VinylDetail {
     }
 
     addToCart() {
-        const cart = CartUtils.getCart();
-        const existingItem = cart.find(item => item.index === this.itemIndex);
-        
-        if (existingItem) {
-            existingItem.quantity += 1;
-        } else {
-            cart.push({
-                index: this.itemIndex,
-                title: this.item.release_title || 'Unknown Title',
-                artist: this.item.artist_names || 'Unknown Artist',
-                price: parseFloat(this.item.price_value) || 0,
-                currency: this.item.price_currency || '$',
-                image: this.item.image_uri || null,
-                quantity: 1
-            });
-        }
-        
-        CartUtils.saveCart(cart);
+        // Use the new utility method for consistent cart management
+        CartUtils.addToCart(this.item, 1);
         
         const button = document.getElementById('add-to-cart');
         const originalText = button.textContent;

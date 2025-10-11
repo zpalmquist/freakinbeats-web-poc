@@ -58,35 +58,36 @@ class ShoppingCart {
             <div class="cart-item-price">${CartUtils.formatPrice(item.price * item.quantity, item.currency)}</div>
             <div class="cart-item-controls">
                 <div class="quantity-controls">
-                    <button class="quantity-btn" onclick="cart.decreaseQuantity(${index})" ${item.quantity <= 1 ? 'disabled' : ''}>-</button>
+                    <button class="quantity-btn" onclick="cart.decreaseQuantity('${item.listing_id}')" ${item.quantity <= 1 ? 'disabled' : ''}>-</button>
                     <span class="quantity">${item.quantity}</span>
-                    <button class="quantity-btn" onclick="cart.increaseQuantity(${index})">+</button>
+                    <button class="quantity-btn" onclick="cart.increaseQuantity('${item.listing_id}')">+</button>
                 </div>
-                <button class="remove-btn" onclick="cart.removeItem(${index})">Remove</button>
+                <button class="remove-btn" onclick="cart.removeItem('${item.listing_id}')">Remove</button>
             </div>
         `;
 
         return div;
     }
 
-    increaseQuantity(index) {
-        this.cart[index].quantity += 1;
-        CartUtils.saveCart(this.cart);
-        this.renderCart();
-    }
-
-    decreaseQuantity(index) {
-        if (this.cart[index].quantity > 1) {
-            this.cart[index].quantity -= 1;
-            CartUtils.saveCart(this.cart);
-            this.renderCart();
+    increaseQuantity(listingId) {
+        const item = this.cart.find(item => item.listing_id === listingId);
+        if (item) {
+            CartUtils.updateQuantity(listingId, item.quantity + 1);
+            this.loadCart(); // Refresh cart display
         }
     }
 
-    removeItem(index) {
-        this.cart.splice(index, 1);
-        CartUtils.saveCart(this.cart);
-        this.renderCart();
+    decreaseQuantity(listingId) {
+        const item = this.cart.find(item => item.listing_id === listingId);
+        if (item && item.quantity > 1) {
+            CartUtils.updateQuantity(listingId, item.quantity - 1);
+            this.loadCart(); // Refresh cart display
+        }
+    }
+
+    removeItem(listingId) {
+        CartUtils.removeFromCart(listingId);
+        this.loadCart(); // Refresh cart display
     }
 
     updateSummary() {

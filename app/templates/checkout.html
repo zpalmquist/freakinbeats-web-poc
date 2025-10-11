@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout - Freakin Beats{% endblock %}
+
+{% block header_title %}💳 Checkout{% endblock %}
+
+{% block header_content %}
+<p>Complete your vinyl purchase</p>
+{% endblock %}
+
+{% block content %}
+<div class="checkout-container">
+    <div class="loading" id="loading">
+        🎵 Loading checkout...
+    </div>
+    
+    <div class="error" id="error" style="display: none;">
+        ❌ <span id="error-message">Error loading checkout. Please try again.</span>
+    </div>
+
+    <div class="empty-cart" id="empty-cart" style="display: none;">
+        <h2>🛒 Your cart is empty</h2>
+        <p>Add some vinyl records to your cart before checking out!</p>
+        <a href="/" class="shop-btn">Start Shopping</a>
+    </div>
+
+    <div id="checkout-content" style="display: none;">
+        <div class="checkout-sections">
+            <!-- Order Summary Section -->
+            <div class="checkout-section">
+                <h2>📋 Order Summary</h2>
+                <div class="order-items" id="order-items">
+                    <!-- Order items will be inserted here -->
+                </div>
+                
+                <div class="order-total">
+                    <div class="total-row">
+                        <span>Subtotal:</span>
+                        <span id="order-subtotal">$0.00</span>
+                    </div>
+                    <div class="total-row shipping">
+                        <span>Shipping:</span>
+                        <span>FREE</span>
+                    </div>
+                    <div class="total-row final">
+                        <span><strong>Total:</strong></span>
+                        <span id="order-total"><strong>$0.00</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Section (Placeholder) -->
+            <div class="checkout-section">
+                <h2>💳 Payment Information</h2>
+                <div class="payment-placeholder">
+                    <p>🚧 Payment processing will be integrated in the next step</p>
+                    <p>Your cart has been validated and is ready for payment!</p>
+                    
+                    <div class="payment-actions">
+                        <button id="back-to-cart" class="secondary-btn">← Back to Cart</button>
+                        <button id="complete-order" class="primary-btn" disabled>Complete Order (Coming Soon)</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/cart-utils.js') }}"></script>
+<script src="{{ url_for('static', filename='js/checkout.js') }}"></script>
+{% endblock %}
