@@ -193,19 +193,80 @@ class VinylDetail {
         const container = document.getElementById('label-links');
         container.innerHTML = '';
         
-        // Render AI overviews first if available
-        if (this.labelOverviews && Object.keys(this.labelOverviews).length > 0) {
+        const hasMultipleLabels = this.labelOverviews && Object.keys(this.labelOverviews).length > 1;
+        
+        if (hasMultipleLabels) {
+            // For multiple labels: interleave overview and URLs for each label
+            // Group URLs by label name (extract from title prefix)
+            const labelGroups = new Map();
+            
+            // First, add overviews
             for (const [labelName, overview] of Object.entries(this.labelOverviews)) {
-                const overviewDiv = this.createLabelOverview(labelName, overview);
-                container.appendChild(overviewDiv);
+                if (!labelGroups.has(labelName)) {
+                    labelGroups.set(labelName, { overview, urls: [] });
+                }
+            }
+            
+            // Then, group URLs by label
+            this.labelUrls.forEach((linkInfo) => {
+                // Extract label name from title (format: "Label Name - URL Type")
+                const match = linkInfo.title.match(/^(.+?)\s*-\s*.+$/);
+                const labelName = match ? match[1] : null;
+                
+                if (labelName && labelGroups.has(labelName)) {
+                    labelGroups.get(labelName).urls.push(linkInfo);
+                } else {
+                    // Fallback for URLs without label prefix
+                    const firstLabel = Array.from(labelGroups.keys())[0];
+                    if (firstLabel) {
+                        labelGroups.get(firstLabel).urls.push(linkInfo);
+                    }
+                }
+            });
+            
+            // Render each label group: overview followed by its URLs
+            for (const [labelName, group] of labelGroups) {
+                // Render overview
+                if (group.overview) {
+                    const overviewDiv = this.createLabelOverview(labelName, group.overview);
+                    container.appendChild(overviewDiv);
+                }
+                
+                // Render URLs for this label in a row
+                if (group.urls.length > 0) {
+                    const urlRow = document.createElement('div');
+                    urlRow.className = 'label-links-row';
+                    
+                    group.urls.forEach((linkInfo) => {
+                        const link = this.createLabelLink(linkInfo);
+                        urlRow.appendChild(link);
+                    });
+                    
+                    container.appendChild(urlRow);
+                }
+            }
+        } else {
+            // For single label: render overview first, then all URLs in a row
+            if (this.labelOverviews && Object.keys(this.labelOverviews).length > 0) {
+                for (const [labelName, overview] of Object.entries(this.labelOverviews)) {
+                    const overviewDiv = this.createLabelOverview(labelName, overview);
+                    container.appendChild(overviewDiv);
+                }
+            }
+            
+            // Render the URL links in a row
+            if (this.labelUrls.length > 0) {
+                const urlRow = document.createElement('div');
+                urlRow.className = 'label-links-row';
+                
+                this.labelUrls.forEach((linkInfo) => {
+                    const link = this.createLabelLink(linkInfo);
+                    urlRow.appendChild(link);
+                });
+                
+                container.appendChild(urlRow);
             }
         }
-        
-        // Then render the URL links
-        this.labelUrls.forEach((linkInfo) => {
-            const link = this.createLabelLink(linkInfo);
-            container.appendChild(link);
-        });
     }
     
     createLabelOverview(labelName, overview) {

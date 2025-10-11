@@ -232,7 +232,13 @@
   .label-links {
     display: flex;
     flex-direction: column;
+    gap: $spacing-md;
+  }
+  
+  .label-links-row {
+    display: flex;
     gap: $spacing-sm;
+    width: 100%;
   }
   
   .label-overview {
@@ -272,13 +278,18 @@
   
   .label-link {
     display: flex;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
     padding: $spacing-md;
     @include glass;
     border-radius: $radius-sm;
     cursor: pointer;
     @include hover-lift;
     transition: all 0.3s ease;
+    flex: 1;
+    min-width: 0; // Allow flex shrinking
+    text-align: center;
     
     &:hover {
       background: rgba($primary-color, 0.2);
@@ -286,32 +297,32 @@
     }
     
     .label-link-content {
-      flex: 1;
+      width: 100%;
       
       .label-link-title {
-        font-size: 1rem;
+        font-size: 0.95rem;
         font-weight: bold;
         margin-bottom: $spacing-xs;
         color: #000;
       }
       
       .label-link-description {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         opacity: 0.8;
         color: $text-white;
+        display: none; // Hide description to save space
       }
     }
     
     .label-link-arrow {
-      font-size: 1.5rem;
-      margin-left: $spacing-md;
+      font-size: 1.2rem;
+      margin-top: $spacing-xs;
       opacity: 0.6;
-      flex-shrink: 0;
       transition: transform 0.3s ease;
     }
     
     &:hover .label-link-arrow {
-      transform: translateX(5px);
+      transform: translateY(3px);
       opacity: 1;
     }
   }
