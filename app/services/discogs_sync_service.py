@@ -200,12 +200,11 @@ class DiscogsSyncService:
         
         # Price information
         price = listing.get('price', {})
-        flattened['price_value'] = float(price.get('value', 0)) if price.get('value') else None
+        flattened['price_value'] = float(price['value']) if price.get('value') else None
         flattened['price_currency'] = price.get('currency', '')
         
-        # Shipping information
-        shipping = listing.get('shipping', {})
-        flattened['shipping_price'] = float(shipping.get('price', 0)) if shipping.get('price') else None
+        shipping = listing.get('shipping_price', {})
+        flattened['shipping_price'] = float(shipping['value']) if shipping.get('value') else None
         flattened['shipping_currency'] = shipping.get('currency', '')
         
         # Additional listing details
@@ -225,45 +224,17 @@ class DiscogsSyncService:
         
         # Artist information
         artist = release.get('artist', '')
-        if artist:
-            flattened['artist_names'] = artist
-            flattened['primary_artist'] = artist
-        else:
-            artists = release.get('artists', [])
-            if artists:
-                artist_names = [a.get('name', '') for a in artists]
-                flattened['artist_names'] = '; '.join(artist_names)
-                flattened['primary_artist'] = artists[0].get('name', '') if artists else ''
-            else:
-                flattened['artist_names'] = ''
-                flattened['primary_artist'] = ''
-        
-        # Label information
+        flattened['artist_names'] = artist
+        flattened['primary_artist'] = artist
+
         label = release.get('label', '')
-        if label:
-            flattened['label_names'] = label
-            flattened['primary_label'] = label
-        else:
-            labels = release.get('labels', [])
-            if labels:
-                label_names = [lbl.get('name', '') for lbl in labels]
-                flattened['label_names'] = '; '.join(label_names)
-                flattened['primary_label'] = labels[0].get('name', '') if labels else ''
-            else:
-                flattened['label_names'] = ''
-                flattened['primary_label'] = ''
+        flattened['label_names'] = label
+        flattened['primary_label'] = label
         
-        # Format information
-        formats = release.get('formats', [])
-        if formats:
-            format_names = [fmt.get('name', '') for fmt in formats]
-            flattened['format_names'] = '; '.join(format_names)
-            flattened['primary_format'] = formats[0].get('name', '') if formats else ''
-        else:
-            flattened['format_names'] = ''
-            flattened['primary_format'] = ''
+        format_str = release.get('format', '')
+        flattened['format_names'] = format_str
+        flattened['primary_format'] = format_str
         
-        # Genre and style information
         genres = release.get('genres', [])
         flattened['genres'] = '; '.join(genres) if genres else ''
         
@@ -272,8 +243,6 @@ class DiscogsSyncService:
         
         # Country information
         flattened['country'] = release.get('country', '')
-        
-        # Additional release details
         flattened['catalog_number'] = release.get('catalog_number', '')
         flattened['barcode'] = release.get('barcode', '')
         flattened['master_id'] = str(release.get('master_id', ''))
@@ -281,12 +250,8 @@ class DiscogsSyncService:
         
         # Images
         images = release.get('images', [])
-        if images:
-            flattened['image_uri'] = images[0].get('uri', '') if images else ''
-            flattened['image_resource_url'] = images[0].get('resource_url', '') if images else ''
-        else:
-            flattened['image_uri'] = ''
-            flattened['image_resource_url'] = ''
+        flattened['image_uri'] = images[0].get('uri', '') if images else ''
+        flattened['image_resource_url'] = images[0].get('resource_url', '') if images else ''
         
         # Statistics
         stats = release.get('stats', {})

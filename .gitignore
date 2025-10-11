@@ -2,6 +2,10 @@
 app/static/css/all.css
 app/static/.webassets-cache/
 
+# Test outputs
+.coverage
+tests/fixtures/real_discogs_data.json
+
 # Python
 __pycache__/
 *.py[cod]
