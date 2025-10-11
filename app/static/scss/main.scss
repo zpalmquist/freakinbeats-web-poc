@@ -1,6 +1,7 @@
 @import 'variables';
 @import 'base';
 @import 'vinyl';
+@import 'checkout';
 
 .collage-container {
   @include glass-container;
@@ -24,6 +25,9 @@
   border: 2px solid transparent;
   cursor: pointer;
   @include hover-lift;
+  display: flex;
+  flex-direction: column;
+  min-height: 320px; /* Ensure consistent height for Firefox */
 
   &:hover {
     border-color: rgba(255, 255, 255, 0.5);
@@ -34,11 +38,15 @@
   .vinyl-image {
     height: 200px;
     border-radius: $radius-sm $radius-sm 0 0;
+    flex-shrink: 0; /* Prevent image from shrinking */
   }
   
   .vinyl-info {
     @include vinyl-info-text;
     padding: $spacing-md;
+    flex: 1; /* Take remaining space */
+    display: flex;
+    flex-direction: column;
   }
   
   .vinyl-title {
