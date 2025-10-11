@@ -203,10 +203,16 @@ class DiscogsSyncService:
         flattened['price_value'] = float(price.get('value', 0)) if price.get('value') else None
         flattened['price_currency'] = price.get('currency', '')
         
-        # Shipping information
-        shipping = listing.get('shipping', {})
-        flattened['shipping_price'] = float(shipping.get('price', 0)) if shipping.get('price') else None
-        flattened['shipping_currency'] = shipping.get('currency', '')
+        # Shipping information (handle both 'shipping' and 'shipping_price' keys)
+        shipping = listing.get('shipping', listing.get('shipping_price', {}))
+        if isinstance(shipping, dict):
+            # If shipping is a dict, extract value/price and currency
+            shipping_value = shipping.get('value') or shipping.get('price')
+            flattened['shipping_price'] = float(shipping_value) if shipping_value else None
+            flattened['shipping_currency'] = shipping.get('currency', '')
+        else:
+            flattened['shipping_price'] = None
+            flattened['shipping_currency'] = ''
         
         # Additional listing details
         flattened['weight'] = float(listing.get('weight', 0)) if listing.get('weight') else None
@@ -253,15 +259,20 @@ class DiscogsSyncService:
                 flattened['label_names'] = ''
                 flattened['primary_label'] = ''
         
-        # Format information
-        formats = release.get('formats', [])
-        if formats:
-            format_names = [fmt.get('name', '') for fmt in formats]
-            flattened['format_names'] = '; '.join(format_names)
-            flattened['primary_format'] = formats[0].get('name', '') if formats else ''
+        # Format information (handle both 'format' string and 'formats' array)
+        format_str = release.get('format', '')
+        if format_str:
+            flattened['format_names'] = format_str
+            flattened['primary_format'] = format_str
         else:
-            flattened['format_names'] = ''
-            flattened['primary_format'] = ''
+            formats = release.get('formats', [])
+            if formats:
+                format_names = [fmt.get('name', '') for fmt in formats]
+                flattened['format_names'] = '; '.join(format_names)
+                flattened['primary_format'] = formats[0].get('name', '') if formats else ''
+            else:
+                flattened['format_names'] = ''
+                flattened['primary_format'] = ''
         
         # Genre and style information
         genres = release.get('genres', [])
