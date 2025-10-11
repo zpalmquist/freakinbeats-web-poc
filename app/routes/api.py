@@ -65,6 +65,35 @@ def search_listings():
     )
     return jsonify(data)
 
+@bp.route('/filter')
+def filter_listings():
+    """Filter listings with multiple criteria."""
+    service = InventoryService()
+    
+    query = request.args.get('q')
+    artist = request.args.get('artist')
+    label = request.args.get('label')
+    year = request.args.get('year')
+    condition = request.args.get('condition')
+    sleeve_condition = request.args.get('sleeve_condition')
+    
+    data = service.filter_items(
+        query=query,
+        artist=artist,
+        label=label,
+        year=year,
+        condition=condition,
+        sleeve_condition=sleeve_condition
+    )
+    return jsonify(data)
+
+@bp.route('/facets')
+def get_facets():
+    """Get filter facets with counts."""
+    service = InventoryService()
+    facets = service.get_filter_facets()
+    return jsonify(facets)
+
 @bp.route('/stats')
 def get_stats():
     """Get inventory statistics."""

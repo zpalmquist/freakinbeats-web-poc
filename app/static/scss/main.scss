@@ -2,6 +2,7 @@
 @import 'base';
 @import 'vinyl';
 @import 'checkout';
+@import 'filters';
 
 .collage-container {
   @include glass-container;

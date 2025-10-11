@@ -17,6 +17,99 @@
         ❌ Error loading data. Please make sure the CSV file exists and the server is running.
     </div>
 
+    <!-- Search and Filter Section -->
+    <div class="filter-section" id="filter-section" style="display: none;">
+        <!-- Search Bar -->
+        <div class="search-bar">
+            <input 
+                type="text" 
+                id="search-input" 
+                placeholder="🔍 Search by title, artist, or label..."
+                class="search-input"
+            />
+            <button id="clear-search" class="clear-btn" style="display: none;">✕</button>
+        </div>
+
+        <!-- Active Filters Display -->
+        <div class="active-filters" id="active-filters" style="display: none;">
+            <span class="filter-label">Active Filters:</span>
+            <div class="filter-tags" id="filter-tags"></div>
+            <button id="clear-all-filters" class="clear-all-btn">Clear All</button>
+        </div>
+
+        <!-- Filter Categories -->
+        <div class="filter-categories">
+            <!-- Artist Filter -->
+            <div class="filter-category">
+                <button class="filter-toggle" data-filter="artist">
+                    <span class="filter-title">Artists</span>
+                    <span class="filter-arrow">▼</span>
+                </button>
+                <div class="filter-options" id="artist-filters" style="display: none;">
+                    <div class="filter-search">
+                        <input type="text" placeholder="Search artists..." class="filter-search-input" data-filter="artist">
+                    </div>
+                    <div class="filter-buttons" id="artist-buttons"></div>
+                </div>
+            </div>
+
+            <!-- Label Filter -->
+            <div class="filter-category">
+                <button class="filter-toggle" data-filter="label">
+                    <span class="filter-title">Labels</span>
+                    <span class="filter-arrow">▼</span>
+                </button>
+                <div class="filter-options" id="label-filters" style="display: none;">
+                    <div class="filter-search">
+                        <input type="text" placeholder="Search labels..." class="filter-search-input" data-filter="label">
+                    </div>
+                    <div class="filter-buttons" id="label-buttons"></div>
+                </div>
+            </div>
+
+            <!-- Year Filter -->
+            <div class="filter-category">
+                <button class="filter-toggle" data-filter="year">
+                    <span class="filter-title">Years</span>
+                    <span class="filter-arrow">▼</span>
+                </button>
+                <div class="filter-options" id="year-filters" style="display: none;">
+                    <div class="filter-search">
+                        <input type="text" placeholder="Search years..." class="filter-search-input" data-filter="year">
+                    </div>
+                    <div class="filter-buttons" id="year-buttons"></div>
+                </div>
+            </div>
+
+            <!-- Condition Filter -->
+            <div class="filter-category">
+                <button class="filter-toggle" data-filter="condition">
+                    <span class="filter-title">Condition</span>
+                    <span class="filter-arrow">▼</span>
+                </button>
+                <div class="filter-options" id="condition-filters" style="display: none;">
+                    <div class="filter-buttons" id="condition-buttons"></div>
+                </div>
+            </div>
+
+            <!-- Sleeve Condition Filter -->
+            <div class="filter-category">
+                <button class="filter-toggle" data-filter="sleeve">
+                    <span class="filter-title">Sleeve Condition</span>
+                    <span class="filter-arrow">▼</span>
+                </button>
+                <div class="filter-options" id="sleeve-filters" style="display: none;">
+                    <div class="filter-buttons" id="sleeve-buttons"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Count -->
+        <div class="results-summary" id="results-summary">
+            <span id="results-count">Loading...</span>
+        </div>
+    </div>
+
     <div class="collage-grid" id="collage-grid" style="display: none;">
         <!-- Vinyl items will be dynamically inserted here -->
     </div>

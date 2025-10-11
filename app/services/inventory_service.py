@@ -101,6 +101,122 @@ class InventoryService:
                 Listing.updated_at.desc()
             ).first().updated_at.isoformat() if total > 0 else None
         }
+    
+    def get_filter_facets(self) -> dict:
+        """
+        Get all unique values for filterable fields with counts.
+        
+        Returns:
+            Dictionary with filter facets and their counts
+        """
+        from sqlalchemy import func
+        
+        # Get unique artists with counts
+        artists = Listing.query.with_entities(
+            Listing.primary_artist,
+            func.count(Listing.id).label('count')
+        ).filter(
+            Listing.primary_artist.isnot(None),
+            Listing.primary_artist != ''
+        ).group_by(Listing.primary_artist).order_by(
+            func.count(Listing.id).desc()
+        ).all()
+        
+        # Get unique labels with counts
+        labels = Listing.query.with_entities(
+            Listing.primary_label,
+            func.count(Listing.id).label('count')
+        ).filter(
+            Listing.primary_label.isnot(None),
+            Listing.primary_label != ''
+        ).group_by(Listing.primary_label).order_by(
+            func.count(Listing.id).desc()
+        ).all()
+        
+        # Get unique years with counts
+        years = Listing.query.with_entities(
+            Listing.release_year,
+            func.count(Listing.id).label('count')
+        ).filter(
+            Listing.release_year.isnot(None),
+            Listing.release_year != ''
+        ).group_by(Listing.release_year).order_by(
+            Listing.release_year.desc()
+        ).all()
+        
+        # Get unique conditions with counts
+        conditions = Listing.query.with_entities(
+            Listing.condition,
+            func.count(Listing.id).label('count')
+        ).filter(
+            Listing.condition.isnot(None),
+            Listing.condition != ''
+        ).group_by(Listing.condition).order_by(
+            func.count(Listing.id).desc()
+        ).all()
+        
+        # Get unique sleeve conditions with counts
+        sleeve_conditions = Listing.query.with_entities(
+            Listing.sleeve_condition,
+            func.count(Listing.id).label('count')
+        ).filter(
+            Listing.sleeve_condition.isnot(None),
+            Listing.sleeve_condition != ''
+        ).group_by(Listing.sleeve_condition).order_by(
+            func.count(Listing.id).desc()
+        ).all()
+        
+        return {
+            'artists': [{'value': artist, 'count': count} for artist, count in artists if artist],
+            'labels': [{'value': label, 'count': count} for label, count in labels if label],
+            'years': [{'value': year, 'count': count} for year, count in years if year],
+            'conditions': [{'value': condition, 'count': count} for condition, count in conditions if condition],
+            'sleeve_conditions': [{'value': sleeve, 'count': count} for sleeve, count in sleeve_conditions if sleeve]
+        }
+    
+    def filter_items(self, query: str = None, artist: str = None, 
+                    label: str = None, year: str = None, 
+                    condition: str = None, sleeve_condition: str = None) -> List[dict]:
+        """
+        Filter listings with multiple criteria.
+        
+        Args:
+            query: Search query for title or artist
+            artist: Filter by artist name
+            label: Filter by label name
+            year: Filter by release year
+            condition: Filter by condition
+            sleeve_condition: Filter by sleeve condition
+            
+        Returns:
+            List of matching listing dictionaries
+        """
+        q = Listing.query
+        
+        if query:
+            q = q.filter(
+                (Listing.release_title.ilike(f'%{query}%')) |
+                (Listing.artist_names.ilike(f'%{query}%')) |
+                (Listing.label_names.ilike(f'%{query}%'))
+            )
+        
+        if artist:
+            q = q.filter(Listing.primary_artist == artist)
+        
+        if label:
+            q = q.filter(Listing.primary_label == label)
+        
+        if year:
+            q = q.filter(Listing.release_year == year)
+        
+        if condition:
+            q = q.filter(Listing.condition == condition)
+        
+        if sleeve_condition:
+            q = q.filter(Listing.sleeve_condition == sleeve_condition)
+        
+        listings = q.order_by(Listing.posted.desc()).all()
+        return [listing.to_dict() for listing in listings]
 
     def get_item_with_videos(self, listing_id: str) -> Optional[Dict]:
         """

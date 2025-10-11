@@ -5,6 +5,7 @@ A modular Flask ecommerce application for displaying and managing Discogs vinyl 
 ## ✨ Features
 
 - 🖼️ **Visual Collage**: Responsive grid of vinyl record images
+- 🔍 **Advanced Search & Filtering**: Freetext search with multi-faceted filtering by artist, label, year, and condition
 - 🎨 **Modern Design**: SCSS-based styling with glassmorphism effects
 - 📱 **Responsive**: Works on desktop, tablet, and mobile
 - 🛒 **Shopping Cart**: Add items, manage quantities, and view cart totals
@@ -112,6 +113,8 @@ Optional settings in `config.py`:
 - `GET /api/data` - Get all listings
 - `GET /api/data/<listing_id>` - Get specific listing
 - `GET /api/search?q=query&artist=name&genre=rock` - Search listings
+- `GET /api/filter?q=query&artist=name&label=name&year=2020&condition=Mint&sleeve_condition=VG+` - Advanced filtering
+- `GET /api/facets` - Get filter facets with counts for all filterable fields
 - `GET /api/stats` - Get inventory statistics
 
 **Shopping Cart & Checkout:**
@@ -123,6 +126,98 @@ Optional settings in `config.py`:
 - `GET /api/logs/stats` - Get access log statistics
 
 See `MIGRATION_ARCHITECTURE.md` for detailed documentation.
+
+## 🔍 Search & Filtering
+
+The main listings page includes a comprehensive search and filtering system:
+
+### Search Features
+- **Freetext Search**: Search across titles, artists, and labels
+- **Debounced Input**: 300ms delay prevents excessive API calls
+- **Clear Button**: Quick reset of search query
+- **Real-time Results**: Instant filtering as you type
+
+### Filter Categories
+
+**Artist Filter:**
+- Filter by primary artist name
+- Search within artists list
+- Shows listing count per artist
+- Sorted by most listings
+
+**Label Filter:**
+- Filter by record label
+- Search within labels list
+- Shows listing count per label
+- Sorted by most listings
+
+**Year Filter:**
+- Filter by release year
+- Search within years list
+- Shows listing count per year
+- Sorted chronologically (newest first)
+
+**Condition Filter:**
+- Filter by media condition (Mint, Near Mint, VG+, etc.)
+- Shows listing count per condition
+- Quick toggle buttons
+
+**Sleeve Condition Filter:**
+- Filter by sleeve/jacket condition
+- Shows listing count per condition
+- Independent from media condition
+
+### Filtering UI
+
+**Collapsible Categories:**
+- Click category headers to expand/collapse
+- Only one category open at a time
+- Arrow indicators show open/closed state
+
+**Active Filters Display:**
+- Visual tags show all active filters
+- Remove individual filters via × button
+- "Clear All" button resets everything
+- Shows "Showing X of Y records" count
+
+**Multiple Simultaneous Filters:**
+- Apply filters from different categories at once
+- Filters are ANDed together (all must match)
+- Search query applies across filtered results
+
+**Filter Search:**
+- Search within large filter lists (artists, labels, years)
+- Helps find specific values quickly
+- Real-time filtering of options
+
+### Technical Implementation
+
+**Backend:**
+```python
+# Get filter facets with counts
+facets = inventory_service.get_filter_facets()
+# Returns: {'artists': [...], 'labels': [...], 'years': [...], etc.}
+
+# Apply multiple filters
+results = inventory_service.filter_items(
+    query='techno',
+    artist='Aphex Twin',
+    year='1995',
+    condition='Mint (M)'
+)
+```
+
+**Frontend:**
+- `DiscogsCollage` class manages filter state
+- Parallel API calls for data and facets
+- LocalStorage persistence planned
+- Smooth animations and transitions
+
+**Styling:**
+- Glassmorphism design matching overall aesthetic
+- Fully responsive (mobile, tablet, desktop)
+- Sticky filter search bars within scrollable lists
+- Active state indicators for selected filters
 
 ## 🛒 Shopping Cart & Checkout
 
@@ -206,6 +301,41 @@ Utility scripts are in the `utils/` directory:
 - `utils/test_discogs_token.py` - Test Discogs API token validity
 
 ## 📦 Recent Changes
+
+### Search & Filtering System (December 2024)
+
+**Added:**
+- ✅ Comprehensive search and filtering UI on main listings page
+- ✅ Freetext search across titles, artists, and labels
+- ✅ Multi-faceted filtering by artist, label, year, condition, and sleeve condition
+- ✅ Filter facets with aggregate counts showing available options
+- ✅ Collapsible filter categories with search boxes
+- ✅ Active filters display with removable tags
+- ✅ Results summary showing filtered vs. total count
+- ✅ Multiple simultaneous filters support
+- ✅ Debounced search input (300ms delay)
+- ✅ Fully responsive design matching site aesthetic
+
+**API Endpoints:**
+- `GET /api/filter` - Advanced filtering with multiple criteria
+- `GET /api/facets` - Get all unique filter values with counts
+
+**Backend Methods:**
+- `InventoryService.get_filter_facets()` - Aggregate filterable fields with counts
+- `InventoryService.filter_items()` - Multi-criteria filtering logic
+
+**Frontend Components:**
+- Enhanced `collage.js` with filter state management
+- New `_filters.scss` with glassmorphism styling
+- Updated `index.html` with complete filter UI
+
+**Technical Details:**
+- Server-side filtering for performance with large datasets
+- SQLAlchemy aggregations for efficient facet counting
+- Filter buttons show count of available items
+- Search within filters for large lists (artists, labels)
+- Maintains correct detail page linking when filtered
+- Smooth animations and visual feedback
 
 ### AI-Powered Label Info Section ([PR #13](https://github.com/SeaBlooms/freakinbeats-web-poc/pull/13))
 
