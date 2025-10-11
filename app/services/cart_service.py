@@ -97,12 +97,21 @@ class CartService:
         
         return True, validated_items, total_price, currency
     
-    def calculate_cart_summary(self, validated_items: List[Dict]) -> Dict:
+    def calculate_cart_summary(self, validated_items: List[Dict], customer_address: Optional[Dict] = None) -> Dict:
         """
         Calculate cart summary including totals, taxes, shipping, etc.
         
         Args:
             validated_items: List of validated cart items
+            customer_address: Optional customer address for location-based tax calculation
+                Expected format: {
+                    'line1': str,           # Street address (required)
+                    'line2': str,           # Apartment, suite, unit, etc. (optional)
+                    'city': str,            # City (required)
+                    'state': str,           # State/province (required)
+                    'postal_code': str,     # ZIP/postal code (required)
+                    'country': str          # Country code (required, e.g., 'US', 'CA')
+                }
             
         Returns:
             Dictionary containing cart summary
@@ -114,19 +123,19 @@ class CartService:
                 'shipping': 0.0,
                 'total': 0.0,
                 'currency': '$',
-                'item_count': 0
+                'item_count': 0,
+                'tax_calculation_method': 'none'
             }
         
         subtotal = sum(item['item_total'] for item in validated_items)
         item_count = sum(item['quantity'] for item in validated_items)
         currency = validated_items[0]['currency']
         
-        # Calculate tax (example: 8.5% sales tax)
-        tax_rate = 0.085
-        tax = subtotal * tax_rate
+        # Calculate tax based on customer location if available
+        tax, tax_method = self._calculate_tax(subtotal, customer_address)
         
-        # Calculate shipping (free shipping over $50, otherwise $5.99)
-        shipping = 0.0 if subtotal >= 50.0 else 5.99
+        # Calculate shipping (free shipping over $65, otherwise $6.50)
+        shipping = self._calculate_shipping(subtotal, customer_address)
         
         total = subtotal + tax + shipping
         
@@ -137,15 +146,17 @@ class CartService:
             'total': round(total, 2),
             'currency': currency,
             'item_count': item_count,
-            'free_shipping_eligible': subtotal >= 50.0
+            'free_shipping_eligible': subtotal >= 65.0,
+            'tax_calculation_method': tax_method
         }
     
-    def prepare_cart_for_payment(self, cart_items: List[Dict]) -> Dict:
+    def prepare_cart_for_payment(self, cart_items: List[Dict], customer_address: Optional[Dict] = None) -> Dict:
         """
         Prepare cart data for payment processing.
         
         Args:
             cart_items: List of cart item dictionaries
+            customer_address: Optional customer address for location-based calculations
             
         Returns:
             Dictionary containing payment-ready cart data
@@ -155,27 +166,29 @@ class CartService:
         if not is_valid:
             raise ValueError("Cart validation failed")
         
-        cart_summary = self.calculate_cart_summary(validated_items)
+        cart_summary = self.calculate_cart_summary(validated_items, customer_address)
         
         return {
             'items': validated_items,
             'summary': cart_summary,
             'is_valid': True,
             'payment_amount': int(cart_summary['total'] * 100),  # Amount in cents for Stripe
-            'currency_code': 'usd' if currency == '$' else currency.lower()
+            'currency_code': 'usd' if currency == '$' else currency.lower(),
+            'customer_address': customer_address
         }
     
-    def get_cart_for_stripe(self, cart_items: List[Dict]) -> Dict:
+    def get_cart_for_stripe(self, cart_items: List[Dict], customer_address: Optional[Dict] = None) -> Dict:
         """
         Format cart data specifically for Stripe payment processing.
         
         Args:
             cart_items: List of cart item dictionaries
+            customer_address: Optional customer address for location-based calculations
             
         Returns:
             Dictionary formatted for Stripe integration
         """
-        payment_data = self.prepare_cart_for_payment(cart_items)
+        payment_data = self.prepare_cart_for_payment(cart_items, customer_address)
         
         # Format line items for Stripe
         line_items = []
@@ -224,3 +237,143 @@ class CartService:
             'currency': payment_data['currency_code'],
             'summary': payment_data['summary']
         }
+    
+    def _calculate_tax(self, subtotal: float, customer_address: Optional[Dict] = None) -> Tuple[float, str]:
+        """
+        Calculate tax based on customer location or default rate.
+        
+        Args:
+            subtotal: Cart subtotal amount
+            customer_address: Optional customer address for location-based calculation
+            
+        Returns:
+            Tuple of (tax_amount, calculation_method)
+        """
+        if customer_address and self._should_use_location_based_tax():
+            # Future: Implement Stripe Tax API or other location-based service
+            # For now, use state-based rates as example
+            tax_amount = self._calculate_location_based_tax(subtotal, customer_address)
+            return tax_amount, 'location_based'
+        else:
+            # Default tax rate (8.5% - adjust based on your business location)
+            default_rate = 0.085
+            tax_amount = subtotal * default_rate
+            return tax_amount, 'default_rate'
+    
+    def _calculate_shipping(self, subtotal: float, customer_address: Optional[Dict] = None) -> float:
+        """
+        Calculate shipping cost based on cart value and destination.
+        
+        Args:
+            subtotal: Cart subtotal amount
+            customer_address: Optional customer address for location-based shipping
+            
+        Returns:
+            Shipping cost
+        """
+        # Free shipping threshold
+        free_shipping_threshold = 65.0
+        
+        if subtotal >= free_shipping_threshold:
+            return 0.0
+        
+        # Future: Could implement zone-based shipping rates
+        # For now, flat rate shipping
+        if customer_address:
+            # Could add international shipping logic here
+            country = customer_address.get('country', 'US')
+            if country != 'US':
+                return 15.00  # International shipping
+        
+        return 6.50  # Domestic shipping
+    
+    def _should_use_location_based_tax(self) -> bool:
+        """
+        Determine if location-based tax calculation should be used.
+        
+        Returns:
+            Boolean indicating if location-based tax is enabled
+        """
+        # Future: This could check a configuration setting
+        # For now, return False to use default rates
+        return False
+    
+    def _calculate_location_based_tax(self, subtotal: float, customer_address: Dict) -> float:
+        """
+        Calculate tax based on customer location (future Stripe Tax integration).
+        
+        Args:
+            subtotal: Cart subtotal amount
+            customer_address: Customer address dictionary
+            
+        Returns:
+            Tax amount based on location
+        """
+        # Placeholder for future implementation
+        # This would integrate with Stripe Tax API or similar service
+        
+        # Example state-based rates (placeholder)
+        state_tax_rates = {
+            'CA': 0.095,  # California
+            'NY': 0.08,   # New York
+            'TX': 0.0625, # Texas
+            'FL': 0.06,   # Florida
+            'WA': 0.065,  # Washington
+        }
+        
+        state = customer_address.get('state', '').upper()
+        tax_rate = state_tax_rates.get(state, 0.085)  # Default to 8.5%
+        
+        return subtotal * tax_rate
+    
+    def _validate_customer_address(self, customer_address: Dict) -> Tuple[bool, Optional[str]]:
+        """
+        Validate customer address format and completeness.
+        
+        Args:
+            customer_address: Customer address dictionary
+            
+        Returns:
+            Tuple of (is_valid, error_message)
+        """
+        if not customer_address:
+            return False, "Customer address is required"
+        
+        required_fields = ['line1', 'city', 'state', 'postal_code', 'country']
+        
+        for field in required_fields:
+            if field not in customer_address or not customer_address[field].strip():
+                return False, f"Address field '{field}' is required"
+        
+        # Validate country code format
+        country = customer_address['country'].upper()
+        if len(country) != 2:
+            return False, "Country must be a 2-letter country code (e.g., 'US', 'CA')"
+        
+        return True, None
+    
+    def _format_address_for_display(self, customer_address: Dict) -> str:
+        """
+        Format customer address for display purposes.
+        
+        Args:
+            customer_address: Customer address dictionary
+            
+        Returns:
+            Formatted address string
+        """
+        parts = [customer_address['line1']]
+        
+        # Add apartment/suite/unit if provided
+        if customer_address.get('line2'):
+            parts.append(customer_address['line2'])
+        
+        # Add city, state, postal code
+        city_state_zip = f"{customer_address['city']}, {customer_address['state']} {customer_address['postal_code']}"
+        parts.append(city_state_zip)
+        
+        # Add country if not US
+        if customer_address['country'].upper() != 'US':
+            parts.append(customer_address['country'].upper())
+        
+        return '\n'.join(parts)
