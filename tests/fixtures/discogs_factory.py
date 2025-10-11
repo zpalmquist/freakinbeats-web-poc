@@ -5,10 +5,9 @@ This module provides utilities for creating realistic test data
 that mimics the structure of Discogs API responses.
 """
 
+import random
 from faker import Faker
 from typing import Dict, List, Optional
-import random
-
 
 class DiscogsDataFactory:
     """Factory for generating mock Discogs listing data."""
@@ -55,9 +54,9 @@ class DiscogsDataFactory:
             'price': {
                 'value': overrides.get('price_value', round(random.uniform(5.0, 150.0), 2)),
                 'currency': overrides.get('price_currency', 'USD')
-            },
-            'shipping': {
-                'price': overrides.get('shipping_price', round(random.uniform(3.0, 10.0), 2)),
+            }, 
+            'shipping_price': {
+                'value': overrides.get('shipping_price', round(random.uniform(3.0, 10.0), 2)),
                 'currency': overrides.get('shipping_currency', 'USD')
             },
             'weight': overrides.get('weight', round(random.uniform(150, 250), 1)),
@@ -67,7 +66,6 @@ class DiscogsDataFactory:
             'comments': overrides.get('comments', ''),
             'release': self._create_release(**overrides.get('release', {}))
         }
-        
         # Apply any additional overrides
         for key, value in overrides.items():
             if key not in listing and key != 'release':
@@ -79,46 +77,22 @@ class DiscogsDataFactory:
         """Create a mock release object."""
         release_id = overrides.get('id', self.fake.random_int(min=1000, max=9999999))
         
-        # Generate artist data
-        num_artists = overrides.get('num_artists', random.randint(1, 3))
-        artists = overrides.get('artists', [
-            {
-                'name': self.fake.name(),
-                'id': self.fake.random_int(min=1000, max=999999),
-                'resource_url': f'https://api.discogs.com/artists/{self.fake.random_int(min=1000, max=999999)}'
-            }
-            for _ in range(num_artists)
-        ])
-        
-        # Generate label data
-        num_labels = overrides.get('num_labels', random.randint(1, 2))
-        labels = overrides.get('labels', [
-            {
-                'name': f'{self.fake.company()} Records',
-                'id': self.fake.random_int(min=1000, max=999999),
-                'catno': self.fake.bothify(text='???-####'),
-                'resource_url': f'https://api.discogs.com/labels/{self.fake.random_int(min=1000, max=999999)}'
-            }
-            for _ in range(num_labels)
-        ])
-        
-        # Generate format data
-        formats = overrides.get('formats', [{
-            'name': random.choice(['Vinyl', 'CD', 'Cassette', '7"', '12"', 'LP']),
-            'qty': '1',
-            'descriptions': [random.choice(['LP', 'Album', '33 ⅓ RPM', 'Stereo'])]
-        }])
+        artist_name = overrides.get('artist', self.fake.name())
+        label_name = overrides.get('label', f'{self.fake.company()} Records')
+        format_name = overrides.get('format', random.choice([
+            'Vinyl', 'LP', '12"', '7"', 'CD', 'Cassette'
+        ]))
         
         # Generate genre and style
         genres = overrides.get('genres', random.sample([
             'Rock', 'Electronic', 'Jazz', 'Funk / Soul', 'Pop',
             'Hip Hop', 'Classical', 'Reggae', 'Blues', 'Folk, World, & Country'
-        ], k=random.randint(1, 3)))
+        ], k=random.randint(1, 2)))
         
         styles = overrides.get('styles', random.sample([
             'Alternative Rock', 'Indie Rock', 'House', 'Techno', 'Disco',
             'Funk', 'Soul', 'Punk', 'Post-Punk', 'Experimental'
-        ], k=random.randint(1, 3)))
+        ], k=random.randint(0, 2)))  # Styles can be empty
         
         # Generate image data
         images = overrides.get('images', [{
@@ -137,16 +111,16 @@ class DiscogsDataFactory:
             'resource_url': overrides.get('resource_url',
                 f'https://api.discogs.com/releases/{release_id}'),
             'uri': overrides.get('uri', f'/release/{release_id}'),
-            'artists': artists,
-            'labels': labels,
-            'formats': formats,
+            'artist': artist_name,
+            'label': label_name,
+            'format': format_name,
             'genres': genres,
             'styles': styles,
             'country': overrides.get('country', random.choice([
                 'US', 'UK', 'Germany', 'Japan', 'France', 'Canada', 'Italy'
             ])),
             'catalog_number': overrides.get('catalog_number', 
-                labels[0]['catno'] if labels else self.fake.bothify(text='???-####')),
+                self.fake.bothify(text='???-####')),
             'barcode': overrides.get('barcode', ''),
             'master_id': overrides.get('master_id', self.fake.random_int(min=1000, max=999999)),
             'master_url': overrides.get('master_url',
@@ -162,7 +136,7 @@ class DiscogsDataFactory:
         
         # Apply any additional overrides
         for key, value in overrides.items():
-            if key not in ['num_artists', 'num_labels'] and key not in release:
+            if key not in release:
                 release[key] = value
         
         return release
