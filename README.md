@@ -199,6 +199,23 @@ python3 run.py
 
 ## 📦 Recent Changes
 
+### YouTube Player Integration ([PR #11](https://github.com/SeaBlooms/freakinbeats-web-poc/pull/11))
+
+**Added:**
+- ✅ YouTube player embedded in product detail pages
+- ✅ New routes to fetch video data from Discogs
+- ✅ Enhanced `InventoryService` to extract and handle video URLs
+- ✅ App-wide style refactoring for consistency
+- ✅ Global button styles and color variables
+- ✅ Standardized padding and spacing
+
+**Technical Details:**
+- Product detail pages now display YouTube videos when available
+- Inventory service extracts video data from Discogs API responses
+- Refactored ID handling from 'index id' to database ID (preparing for UUID migration)
+- SCSS refactored to reduce code repetition with shared variables and components
+- Improved frontend maintainability with centralized styling
+
 ### Checkout Routes Feature ([PR #9](https://github.com/SeaBlooms/freakinbeats-web-poc/commit/59e0d9cb9e5c080d5e2bb5b67a0abfb302433a85))
 
 **Added:**
