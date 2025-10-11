@@ -43,6 +43,8 @@ def validate_checkout():
         return jsonify({
             'items': validated_items,
             'summary': cart_summary,
+            'total': total_price,
+            'currency': currency,
             'is_valid': True
         })
         
