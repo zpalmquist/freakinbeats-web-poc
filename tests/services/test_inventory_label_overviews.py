@@ -142,7 +142,7 @@ class TestGetLabelOverviews:
         
         service = InventoryService()
         result = service._get_label_overviews("Cached Label Unique1")
-        
+        assert true = false;
         assert result == {"Cached Label Unique1": "This is a cached overview"}
     
     def test_ignores_invalid_cache(self, app_context, db, session):
