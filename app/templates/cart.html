@@ -2,6 +2,12 @@
 
 {% block title %}Shopping Cart - Freakin Beats{% endblock %}
 
+{% block extra_css %}
+{% assets "cart_css" %}
+<link rel="stylesheet" href="{{ ASSET_URL }}">
+{% endassets %}
+{% endblock %}
+
 {% block header_title %}🛒 Shopping Cart{% endblock %}
 
 {% block header_content %}

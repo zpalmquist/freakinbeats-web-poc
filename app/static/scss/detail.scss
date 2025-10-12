@@ -70,10 +70,11 @@
   
   // When label info is present (without videos)
   &.has-label-info:not(.has-videos) {
-    grid-template-columns: 350px 400px 1fr;
+    grid-template-columns: 1fr 1fr;
     grid-template-areas: 
-      "label-info image details";
-    max-width: 1200px;
+      "image details"
+      "label-info label-info";
+    max-width: 800px;
     gap: $spacing-lg;
   }
   
