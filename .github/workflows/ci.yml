@@ -1,0 +1,50 @@
+name: "Python CI"
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v3
+      
+      - name: "Set up Python 3.11"
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+          cache: "pip"
+      
+      - name: "Install dependencies"
+        run: pip install -r requirements.txt
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v3
+      
+      - name: "Set up Python 3.11"
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+          cache: "pip"
+      
+      - name: "Install dependencies"
+        run: pip install -r requirements.txt
+      
+      - name: "Run tests"
+        run: pytest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DISCOGS_TOKEN: ${{ secrets.DISCOGS_TOKEN }}
+          DISCOGS_SELLER_USERNAME: ${{ secrets.DISCOGS_SELLER_USERNAME }}
