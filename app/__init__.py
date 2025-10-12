@@ -18,8 +18,17 @@ def create_app():
     # Setup Flask-Assets
     assets = Environment(app)
     assets.url = app.static_url_path
-    scss = Bundle('scss/main.scss', 'scss/cart.scss', 'scss/detail.scss', filters='libsass', output='css/all.css')
-    assets.register('scss_all', scss)
+    
+    # Register individual SCSS bundles
+    main_scss = Bundle('scss/main.scss', filters='libsass', output='css/main.css')
+    cart_scss = Bundle('scss/cart.scss', filters='libsass', output='css/cart.css')
+    checkout_scss = Bundle('scss/checkout.scss', filters='libsass', output='css/checkout.css')
+    detail_scss = Bundle('scss/detail.scss', filters='libsass', output='css/detail.css')
+    
+    assets.register('main_css', main_scss)
+    assets.register('cart_css', cart_scss)
+    assets.register('checkout_css', checkout_scss)
+    assets.register('detail_css', detail_scss)
     
     # Import models before creating tables
     from app.models import listing, access_log  # noqa: F401

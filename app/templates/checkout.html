@@ -2,6 +2,12 @@
 
 {% block title %}Checkout - Freakin Beats{% endblock %}
 
+{% block extra_css %}
+{% assets "checkout_css" %}
+<link rel="stylesheet" href="{{ ASSET_URL }}">
+{% endassets %}
+{% endblock %}
+
 {% block header_title %}💳 Checkout{% endblock %}
 
 {% block header_content %}

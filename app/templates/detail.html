@@ -2,6 +2,12 @@
 
 {% block title %}Record Details - Freakin Beats{% endblock %}
 
+{% block extra_css %}
+{% assets "detail_css" %}
+<link rel="stylesheet" href="{{ ASSET_URL }}">
+{% endassets %}
+{% endblock %}
+
 {% block header_title %}
 <a href="/" class="back-button">← Back to Shop</a>
 Freakin Beats
