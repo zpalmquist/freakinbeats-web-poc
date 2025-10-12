@@ -68,6 +68,25 @@
     gap: $spacing-lg;
   }
   
+  // When label info is present (without videos)
+  &.has-label-info:not(.has-videos) {
+    grid-template-columns: 350px 400px 1fr;
+    grid-template-areas: 
+      "label-info image details";
+    max-width: 1200px;
+    gap: $spacing-lg;
+  }
+  
+  // When both videos and label info are present
+  &.has-videos.has-label-info {
+    grid-template-columns: 350px 400px 1fr;
+    grid-template-areas: 
+      "player image details"
+      "label-info label-info label-info";
+    max-width: 1200px;
+    gap: $spacing-lg;
+  }
+  
   .vinyl-image-container {
     grid-area: image;
   }
@@ -78,6 +97,10 @@
   
   .video-player-container {
     grid-area: player;
+  }
+  
+  .label-info-container {
+    grid-area: label-info;
   }
 }
 
@@ -190,6 +213,121 @@
   }
 }
 
+// Label Info Styles
+.label-info-container {
+  @include glass-container;
+  padding: $spacing-lg;
+  
+  .label-info-header {
+    margin-bottom: $spacing-md;
+    
+    h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      color: $text-white;
+      text-align: center;
+    }
+  }
+  
+  .label-links {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+  
+  .label-links-row {
+    display: flex;
+    gap: $spacing-sm;
+    width: 100%;
+  }
+  
+  .label-overview {
+    padding: $spacing-md;
+    @include glass;
+    border-radius: $radius-sm;
+    margin-bottom: $spacing-sm;
+    border-left: 3px solid $primary-color;
+    
+    .label-overview-name {
+      font-size: 0.95rem;
+      font-weight: bold;
+      color: $primary-color;
+      margin-bottom: $spacing-xs;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .label-overview-text {
+      font-size: 0.95rem;
+      line-height: 1.8;
+      color: #000;
+      opacity: 1;
+      white-space: pre-line; // Preserve line breaks for bullet points
+      
+      // Style bullet points if they're not rendering properly
+      ul, ol {
+        margin: 0;
+        padding-left: 20px;
+      }
+      
+      li {
+        margin-bottom: 8px;
+      }
+    }
+  }
+  
+  .label-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: $spacing-md;
+    @include glass;
+    border-radius: $radius-sm;
+    cursor: pointer;
+    @include hover-lift;
+    transition: all 0.3s ease;
+    flex: 1;
+    min-width: 0; // Allow flex shrinking
+    text-align: center;
+    
+    &:hover {
+      background: rgba($primary-color, 0.2);
+      border: 1px solid $primary-color;
+    }
+    
+    .label-link-content {
+      width: 100%;
+      
+      .label-link-title {
+        font-size: 0.95rem;
+        font-weight: bold;
+        margin-bottom: $spacing-xs;
+        color: #000;
+      }
+      
+      .label-link-description {
+        font-size: 0.8rem;
+        opacity: 0.8;
+        color: $text-white;
+        display: none; // Hide description to save space
+      }
+    }
+    
+    .label-link-arrow {
+      font-size: 1.2rem;
+      margin-top: $spacing-xs;
+      opacity: 0.6;
+      transition: transform 0.3s ease;
+    }
+    
+    &:hover .label-link-arrow {
+      transform: translateY(3px);
+      opacity: 1;
+    }
+  }
+}
+
 // Responsive breakpoints using modern CSS
 @media (max-width: 1024px) {
   .detail-content {
@@ -198,6 +336,23 @@
       grid-template-areas: 
         "image details"
         "player player";
+      max-width: 800px;
+    }
+    
+    &.has-label-info:not(.has-videos) {
+      grid-template-columns: 1fr 1fr;
+      grid-template-areas: 
+        "image details"
+        "label-info label-info";
+      max-width: 800px;
+    }
+    
+    &.has-videos.has-label-info {
+      grid-template-columns: 1fr 1fr;
+      grid-template-areas: 
+        "image details"
+        "player player"
+        "label-info label-info";
       max-width: 800px;
     }
   }
@@ -217,6 +372,23 @@
         "image"
         "details" 
         "player";
+    }
+    
+    &.has-label-info:not(.has-videos) {
+      grid-template-columns: 1fr;
+      grid-template-areas: 
+        "image"
+        "details"
+        "label-info";
+    }
+    
+    &.has-videos.has-label-info {
+      grid-template-columns: 1fr;
+      grid-template-areas: 
+        "image"
+        "details"
+        "player"
+        "label-info";
     }
   }
   

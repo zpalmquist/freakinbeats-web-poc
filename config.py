@@ -1,5 +1,9 @@
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 class Config:
     # Legacy CSV settings (for migration script)
@@ -22,6 +26,10 @@ class Config:
     DISCOGS_TOKEN = os.getenv('DISCOGS_TOKEN')
     DISCOGS_SELLER_USERNAME = os.getenv('DISCOGS_SELLER_USERNAME', 'freakin_beats')
     DISCOGS_USER_AGENT = "FreakinbeatsWebApp/1.0"
+    
+    # Google Gemini API settings
+    GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+    ENABLE_AI_OVERVIEWS = os.getenv('ENABLE_AI_OVERVIEWS', 'true').lower() == 'true'
     
     # Scheduler settings
     SCHEDULER_API_ENABLED = False  # Disable APScheduler API

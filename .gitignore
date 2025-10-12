@@ -36,3 +36,6 @@ freakinbeats.db
 
 # OS
 .DS_Store
+
+# Logs
+*.log
