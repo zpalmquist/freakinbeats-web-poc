@@ -194,13 +194,31 @@ class DiscogsSyncService:
         flattened['status'] = listing.get('status', '')
         flattened['condition'] = listing.get('condition', '')
         flattened['sleeve_condition'] = listing.get('sleeve_condition', '')
-        flattened['posted'] = listing.get('posted', '')
+        
+        # Parse posted date as DateTime
+        posted_str = listing.get('posted', '')
+        if posted_str:
+            try:
+                flattened['posted'] = datetime.fromisoformat(posted_str.replace('Z', '+00:00'))
+            except ValueError:
+                flattened['posted'] = None
+        else:
+            flattened['posted'] = None
+        
         flattened['uri'] = listing.get('uri', '')
         flattened['resource_url'] = listing.get('resource_url', '')
         
-        # Price information
+        # Price information - ensure price_value is not None
         price = listing.get('price', {})
-        flattened['price_value'] = float(price['value']) if price.get('value') else None
+        price_value = price.get('value')
+        if price_value is not None:
+            try:
+                flattened['price_value'] = max(0.0, float(price_value))  # Enforce >= 0
+            except (ValueError, TypeError):
+                flattened['price_value'] = 0.0
+        else:
+            flattened['price_value'] = 0.0
+        
         flattened['price_currency'] = price.get('currency', '')
         
         shipping = listing.get('shipping_price', {})
@@ -216,9 +234,11 @@ class DiscogsSyncService:
         
         # Release information
         release = listing.get('release', {})
-        flattened['release_id'] = str(release.get('id', ''))
+        release_id = release.get('id')
+        flattened['release_id'] = str(release_id) if release_id is not None else '0'
+        
         flattened['release_title'] = release.get('title', '')
-        flattened['release_year'] = str(release.get('year', ''))
+        flattened['release_year'] = int(release.get('year', 0)) if release.get('year') else None
         flattened['release_resource_url'] = release.get('resource_url', '')
         flattened['release_uri'] = release.get('uri', '')
         
@@ -258,9 +278,9 @@ class DiscogsSyncService:
         community = stats.get('community', {})
         flattened['release_community_have'] = int(community.get('have', 0)) if community.get('have') else None
         flattened['release_community_want'] = int(community.get('want', 0)) if community.get('want') else None
-        
-        # Timestamp
-        flattened['export_timestamp'] = datetime.now().isoformat()
+
+        # Export timestamp
+        flattened['export_timestamp'] = datetime.now()
         
         return flattened
     
