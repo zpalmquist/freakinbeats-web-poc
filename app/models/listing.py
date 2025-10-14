@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from app.extensions import db
 
 
@@ -12,15 +12,15 @@ class Listing(db.Model):
     
     # Listing information
     listing_id = db.Column(db.String(50), unique=True, nullable=False, index=True)
-    status = db.Column(db.String(50))
+    status = db.Column(db.String(50), index=True)
     condition = db.Column(db.String(50))
     sleeve_condition = db.Column(db.String(50))
-    posted = db.Column(db.String(100))
+    posted = db.Column(db.DateTime())
     uri = db.Column(db.String(255))
     resource_url = db.Column(db.String(255))
     
     # Price information
-    price_value = db.Column(db.Float)
+    price_value = db.Column(db.Float, db.CheckConstraint('price_value >= 0'), nullable=False)
     price_currency = db.Column(db.String(10))
     
     # Shipping information
@@ -35,14 +35,14 @@ class Listing(db.Model):
     comments = db.Column(db.Text)
     
     # Release information
-    release_id = db.Column(db.String(50), index=True)
-    release_title = db.Column(db.String(500))
-    release_year = db.Column(db.String(10))
+    release_id = db.Column(db.String(50), nullable=False, index=True)
+    release_title = db.Column(db.Text)
+    release_year = db.Column(db.Integer(), index=True)
     release_resource_url = db.Column(db.String(255))
     release_uri = db.Column(db.String(255))
     
     # Artist information
-    artist_names = db.Column(db.String(500))
+    artist_names = db.Column(db.Text)
     primary_artist = db.Column(db.String(255), index=True)
     
     # Label information
@@ -75,9 +75,9 @@ class Listing(db.Model):
     release_community_want = db.Column(db.Integer)
     
     # Timestamps
-    export_timestamp = db.Column(db.String(100))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    export_timestamp = db.Column(db.DateTime)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     
     def to_dict(self):
         """Convert listing to dictionary for JSON serialization."""
@@ -86,7 +86,7 @@ class Listing(db.Model):
             'status': self.status,
             'condition': self.condition,
             'sleeve_condition': self.sleeve_condition,
-            'posted': self.posted,
+            'posted': self.posted.isoformat() if self.posted else None,
             'uri': self.uri,
             'resource_url': self.resource_url,
             'price_value': self.price_value,
@@ -120,7 +120,7 @@ class Listing(db.Model):
             'image_resource_url': self.image_resource_url,
             'release_community_have': self.release_community_have,
             'release_community_want': self.release_community_want,
-            'export_timestamp': self.export_timestamp,
+            'export_timestamp': self.export_timestamp.isoformat() if self.export_timestamp else None,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }
