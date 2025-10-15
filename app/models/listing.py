@@ -74,6 +74,14 @@ class Listing(db.Model):
     release_community_have = db.Column(db.Integer)
     release_community_want = db.Column(db.Integer)
     
+    # Soft delete and status tracking
+    is_active = db.Column(db.Boolean, default=True, nullable=False, index=True)
+    removed_at = db.Column(db.DateTime, nullable=True)
+    sold_at = db.Column(db.DateTime, nullable=True)
+    
+    # Flexible metadata storage for future extensions
+    custom_metadata = db.Column(db.JSON, nullable=True)
+    
     # Timestamps
     export_timestamp = db.Column(db.DateTime)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
@@ -122,7 +130,11 @@ class Listing(db.Model):
             'release_community_want': self.release_community_want,
             'export_timestamp': self.export_timestamp.isoformat() if self.export_timestamp else None,
             'created_at': self.created_at.isoformat() if self.created_at else None,
-            'updated_at': self.updated_at.isoformat() if self.updated_at else None
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None,
+            'is_active': self.is_active,
+            'removed_at': self.removed_at.isoformat() if self.removed_at else None,
+            'sold_at': self.sold_at.isoformat() if self.sold_at else None,
+            'custom_metadata': self.custom_metadata
         }
     
     def __repr__(self):

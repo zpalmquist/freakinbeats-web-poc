@@ -5,7 +5,7 @@ This service provides methods to query and retrieve listings from the database.
 """
 
 import requests
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional, Dict
 from flask import current_app
 from app.models.listing import Listing
@@ -18,38 +18,38 @@ class InventoryService:
     
     def get_all_items(self) -> List[dict]:
         """
-        Get all listings from database, sorted by posted date (newest first).
+        Get all active listings from database, sorted by posted date (newest first).
         
         Returns:
             List of listing dictionaries
         """
-        listings = Listing.query.order_by(Listing.posted.desc()).all()
+        listings = Listing.query.filter_by(is_active=True).order_by(Listing.posted.desc()).all()
         return [listing.to_dict() for listing in listings]
     
     def get_item_by_listing_id(self, listing_id: str) -> Optional[dict]:
         """
-        Get a single listing by its Discogs listing ID.
+        Get a single active listing by its Discogs listing ID.
         
         Args:
             listing_id: The Discogs listing ID
             
         Returns:
-            Listing dictionary or None if not found
+            Listing dictionary or None if not found or inactive
         """
-        listing = Listing.query.filter_by(listing_id=listing_id).first()
+        listing = Listing.query.filter_by(listing_id=listing_id, is_active=True).first()
         return listing.to_dict() if listing else None
     
     def get_item_by_id(self, id: int) -> Optional[dict]:
         """
-        Get a single listing by its database ID.
+        Get a single active listing by its database ID.
         
         Args:
             id: The database ID
             
         Returns:
-            Listing dictionary or None if not found
+            Listing dictionary or None if not found or inactive
         """
-        listing = Listing.query.get(id)
+        listing = Listing.query.filter_by(id=id, is_active=True).first()
         return listing.to_dict() if listing else None
     
     def search_items(self, query: str = None, artist: str = None, 
@@ -66,7 +66,7 @@ class InventoryService:
         Returns:
             List of matching listing dictionaries
         """
-        q = Listing.query
+        q = Listing.query.filter_by(is_active=True)
         
         if query:
             q = q.filter(
@@ -93,11 +93,11 @@ class InventoryService:
         Returns:
             Dictionary with inventory statistics
         """
-        total = Listing.query.count()
+        total = Listing.query.filter_by(is_active=True).count()
         
         return {
             'total_listings': total,
-            'last_updated': Listing.query.order_by(
+            'last_updated': Listing.query.filter_by(is_active=True).order_by(
                 Listing.updated_at.desc()
             ).first().updated_at.isoformat() if total > 0 else None
         }
@@ -112,7 +112,7 @@ class InventoryService:
         from sqlalchemy import func
         
         # Get unique artists with counts
-        artists = Listing.query.with_entities(
+        artists = Listing.query.filter_by(is_active=True).with_entities(
             Listing.primary_artist,
             func.count(Listing.id).label('count')
         ).filter(
@@ -123,7 +123,7 @@ class InventoryService:
         ).all()
         
         # Get unique labels with counts
-        labels = Listing.query.with_entities(
+        labels = Listing.query.filter_by(is_active=True).with_entities(
             Listing.primary_label,
             func.count(Listing.id).label('count')
         ).filter(
@@ -134,7 +134,7 @@ class InventoryService:
         ).all()
         
         # Get unique years with counts
-        years = Listing.query.with_entities(
+        years = Listing.query.filter_by(is_active=True).with_entities(
             Listing.release_year,
             func.count(Listing.id).label('count')
         ).filter(
@@ -145,7 +145,7 @@ class InventoryService:
         ).all()
         
         # Get unique conditions with counts
-        conditions = Listing.query.with_entities(
+        conditions = Listing.query.filter_by(is_active=True).with_entities(
             Listing.condition,
             func.count(Listing.id).label('count')
         ).filter(
@@ -156,7 +156,7 @@ class InventoryService:
         ).all()
         
         # Get unique sleeve conditions with counts
-        sleeve_conditions = Listing.query.with_entities(
+        sleeve_conditions = Listing.query.filter_by(is_active=True).with_entities(
             Listing.sleeve_condition,
             func.count(Listing.id).label('count')
         ).filter(
@@ -191,7 +191,7 @@ class InventoryService:
         Returns:
             List of matching listing dictionaries
         """
-        q = Listing.query
+        q = Listing.query.filter_by(is_active=True)
         
         if query:
             q = q.filter(
@@ -220,15 +220,15 @@ class InventoryService:
 
     def get_item_with_videos(self, listing_id: str) -> Optional[Dict]:
         """
-        Get a listing with detailed release information including videos by Discogs listing ID.
+        Get an active listing with detailed release information including videos by Discogs listing ID.
         
         Args:
             listing_id: The Discogs listing ID
             
         Returns:
-            Dictionary with listing data and videos, or None if not found
+            Dictionary with listing data and videos, or None if not found or inactive
         """
-        listing = Listing.query.filter_by(listing_id=listing_id).first()
+        listing = Listing.query.filter_by(listing_id=listing_id, is_active=True).first()
         if not listing:
             return None
             
@@ -252,15 +252,15 @@ class InventoryService:
     
     def get_item_with_videos_by_id(self, id: int) -> Optional[Dict]:
         """
-        Get a listing with detailed release information including videos by database ID.
+        Get an active listing with detailed release information including videos by database ID.
         
         Args:
             id: The database ID
             
         Returns:
-            Dictionary with listing data and videos, or None if not found
+            Dictionary with listing data and videos, or None if not found or inactive
         """
-        listing = Listing.query.get(id)
+        listing = Listing.query.filter_by(id=id, is_active=True).first()
         if not listing:
             return None
             
@@ -498,3 +498,67 @@ class InventoryService:
         except Exception as e:
             db.session.rollback()
             current_app.logger.error(f"Error caching overview for {label_name}: {e}")
+    
+    def _update_listing_status(self, listing_id: str, updates: Dict) -> bool:
+        """
+        Private helper to update listing status fields.
+        
+        Args:
+            listing_id: The Discogs listing ID
+            updates: Dictionary of field names and values to update
+            
+        Returns:
+            True if successful, False if listing not found
+        """
+        listing = Listing.query.filter_by(listing_id=listing_id).first()
+        if listing:
+            for field, value in updates.items():
+                setattr(listing, field, value)
+            db.session.commit()
+            return True
+        return False
+    
+    def soft_delete(self, listing_id: str) -> bool:
+        """
+        Mark a listing as removed (soft delete) instead of deleting from database.
+        
+        Args:
+            listing_id: The Discogs listing ID to mark as removed
+            
+        Returns:
+            True if successful, False if listing not found
+        """
+        return self._update_listing_status(listing_id, {
+            'is_active': False,
+            'removed_at': datetime.now(timezone.utc)
+        })
+    
+    def restore_listing(self, listing_id: str) -> bool:
+        """
+        Restore a soft-deleted listing.
+        
+        Args:
+            listing_id: The Discogs listing ID to restore
+            
+        Returns:
+            True if successful, False if listing not found
+        """
+        return self._update_listing_status(listing_id, {
+            'is_active': True,
+            'removed_at': None
+        })
+    
+    def mark_as_sold(self, listing_id: str) -> bool:
+        """
+        Mark a listing as sold.
+        
+        Args:
+            listing_id: The Discogs listing ID to mark as sold
+            
+        Returns:
+            True if successful, False if listing not found
+        """
+        return self._update_listing_status(listing_id, {
+            'is_active': False,
+            'sold_at': datetime.now(timezone.utc)
+        })

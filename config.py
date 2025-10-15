@@ -34,5 +34,6 @@ class Config:
     # Scheduler settings
     SCHEDULER_API_ENABLED = False  # Disable APScheduler API
     SYNC_INTERVAL_HOURS = 1  # Sync every hour
-    ENABLE_AUTO_SYNC = os.getenv('ENABLE_AUTO_SYNC', 'true').lower() == 'true'
+    # ENABLE_AUTO_SYNC = os.getenv('ENABLE_AUTO_SYNC', 'true').lower() == 'true'
+    ENABLE_AUTO_SYNC = False  # Disable automatic sync permanently
 
