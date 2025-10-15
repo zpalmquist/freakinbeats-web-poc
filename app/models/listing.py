@@ -3,8 +3,6 @@ from app.extensions import db
 
 
 class Listing(db.Model):
-    """SQLAlchemy model for Discogs marketplace listings."""
-    
     __tablename__ = 'listings'
     
     # Primary key
@@ -41,9 +39,13 @@ class Listing(db.Model):
     release_resource_url = db.Column(db.String(255))
     release_uri = db.Column(db.String(255))
     
-    # Artist information
+    # Artist information (denormalized for search/display)
     artist_names = db.Column(db.Text)
     primary_artist = db.Column(db.String(255), index=True)
+    
+    # Artist relationship (normalized)
+    artist_id = db.Column(db.String(36), db.ForeignKey('artists.uuid'), nullable=True)
+    artist = db.relationship('Artist', backref=db.backref('listings', lazy='dynamic'))
     
     # Label information
     label_names = db.Column(db.String(500))
@@ -78,10 +80,10 @@ class Listing(db.Model):
     export_timestamp = db.Column(db.DateTime)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
-    
+
     def to_dict(self):
         """Convert listing to dictionary for JSON serialization."""
-        return {
+        result = {
             'listing_id': self.listing_id,
             'status': self.status,
             'condition': self.condition,
@@ -105,6 +107,7 @@ class Listing(db.Model):
             'release_uri': self.release_uri,
             'artist_names': self.artist_names,
             'primary_artist': self.primary_artist,
+            'artist_id': self.artist_id,
             'label_names': self.label_names,
             'primary_label': self.primary_label,
             'format_names': self.format_names,
@@ -124,6 +127,12 @@ class Listing(db.Model):
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }
+        
+        # Include artist data if relationship is loaded
+        if self.artist:
+            result['artist'] = self.artist.to_dict()
+            
+        return result
     
     def __repr__(self):
         return f'<Listing {self.listing_id}: {self.release_title} by {self.primary_artist}>'
