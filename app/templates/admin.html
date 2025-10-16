@@ -1,0 +1,162 @@
+x<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Access Logs</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body>
+    <div class="admin-container">
+        <header class="admin-header">
+            <h1>🔧 Admin Panel - Access Logs</h1>
+            <div class="admin-nav">
+                <a href="/" class="back-link">← Back to Site</a>
+                <button id="sync-discogs-btn" class="sync-btn">
+                    🔄 Sync Discogs
+                </button>
+            </div>
+        </header>
+
+        <div class="admin-content">
+            <!-- Filters Section -->
+            <div class="filters-section">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label for="search">Search:</label>
+                        <input type="text" id="search" placeholder="Search path, IP, or user agent..." />
+                    </div>
+                    <div class="filter-group">
+                        <label for="method">Method:</label>
+                        <select id="method">
+                            <option value="">All Methods</option>
+                            <option value="GET">GET</option>
+                            <option value="POST">POST</option>
+                            <option value="PUT">PUT</option>
+                            <option value="DELETE">DELETE</option>
+                            <option value="PATCH">PATCH</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="status">Status:</label>
+                        <select id="status">
+                            <option value="">All Status</option>
+                            <option value="200">200 OK</option>
+                            <option value="404">404 Not Found</option>
+                            <option value="500">500 Error</option>
+                            <option value="302">302 Redirect</option>
+                            <option value="400">400 Bad Request</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="per-page">Per Page:</label>
+                        <select id="per-page">
+                            <option value="25">25</option>
+                            <option value="50" selected>50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </div>
+                    <button id="apply-filters" class="btn btn-primary">Apply Filters</button>
+                    <button id="clear-filters" class="btn btn-secondary">Clear</button>
+                </div>
+            </div>
+
+            <!-- Stats Section -->
+            <div class="stats-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="total-requests">-</div>
+                        <div class="stat-label">Total Requests</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="avg-response-time">-</div>
+                        <div class="stat-label">Avg Response Time (ms)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="error-rate">-</div>
+                        <div class="stat-label">Error Rate (%)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="unique-ips">-</div>
+                        <div class="stat-label">Unique IPs</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading Indicator -->
+            <div id="loading" class="loading hidden">
+                <div class="spinner"></div>
+                <span>Loading access logs...</span>
+            </div>
+
+            <!-- Error Message -->
+            <div id="error-message" class="error-message hidden"></div>
+
+            <!-- Logs Table -->
+            <div class="logs-section">
+                <div class="logs-header">
+                    <h3>Access Logs</h3>
+                    <div class="logs-controls">
+                        <button id="refresh-logs" class="btn btn-secondary">🔄 Refresh</button>
+                        <button id="export-logs" class="btn btn-secondary">📥 Export CSV</button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="logs-table" id="logs-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Timestamp</th>
+                                <th>Method</th>
+                                <th>Path</th>
+                                <th>Status</th>
+                                <th>Response Time</th>
+                                <th>IP Address</th>
+                                <th>User Agent</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logs-tbody">
+                            <!-- Logs will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination" id="pagination">
+                    <!-- Pagination will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Log Detail Modal -->
+    <div id="log-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Log Details</h3>
+                <button class="modal-close" id="close-modal">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Log details will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Sync Status Modal -->
+    <div id="sync-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Discogs Sync Status</h3>
+                <button class="modal-close" id="close-sync-modal">&times;</button>
+            </div>
+            <div class="modal-body" id="sync-modal-body">
+                <!-- Sync status will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+</body>
+</html>
