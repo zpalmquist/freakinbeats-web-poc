@@ -1,9 +1,27 @@
 // ============================================================================
 // ADMIN PANEL STYLES
 // ============================================================================
-// Created: October 15, 2025
-// Part of: Phase 1B Refactoring - Admin Styles Migration
-// Purpose: Refactored admin panel using unified design system from Phase 1A
+// TABLE OF CONTENTS
+// ============================================================================
+// 1.  Global Reset & Base Styles
+// 2.  Layout (Container)
+// 3.  Header & Navigation
+// 4.  Buttons
+// 5.  Filters Section
+// 6.  Stats Section
+// 7.  Loading & Error States
+// 8.  Logs Section
+// 9.  Table Styles
+// 10. Badges (Status & Method)
+// 11. Utility Classes
+// 12. Pagination
+// 13. Modal
+// 14. Log Detail (Modal Content)
+// 15. Sync Modal Styles
+// 16. Listing Details
+// 17. Field Changes
+// 18. Login Page
+// 19. Responsive Design
 // ============================================================================
 
 @import 'variables';
@@ -694,6 +712,150 @@ body {
 }
 
 // ============================================================================
+// LOGIN PAGE
+// ============================================================================
+
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, $admin-primary 0%, $admin-secondary 100%);
+  padding: $spacing-lg;
+}
+
+.login-card {
+  @include card;
+  box-shadow: $shadow-xl;
+  padding: $spacing-xl;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.login-header {
+  margin-bottom: $spacing-xl;
+
+  h1 {
+    color: $admin-text-dark;
+    margin: 0 0 $spacing-sm 0;
+    font-size: 1.75rem;
+    font-weight: 600;
+  }
+
+  p {
+    color: $admin-text-light;
+    margin: 0;
+    font-size: 0.875rem;
+  }
+}
+
+.form-group {
+  margin-bottom: $spacing-lg;
+  text-align: left;
+
+  label {
+    @include label-base;
+    margin-bottom: $spacing-xs;
+    font-size: 0.875rem;
+  }
+
+  input {
+    @include input-base;
+    width: 100%;
+    padding: $spacing-sm $spacing-md;
+    border: 2px solid $input-border;
+    border-radius: $radius-sm;
+    font-size: 1rem;
+    box-sizing: border-box;
+
+    &:focus {
+      border-color: $admin-primary;
+      box-shadow: 0 0 0 3px rgba($admin-primary, 0.1);
+    }
+  }
+}
+
+.login-btn {
+  @include btn-base;
+  width: 100%;
+  padding: $spacing-sm;
+  background: linear-gradient(135deg, $admin-primary 0%, $admin-secondary 100%);
+  color: $text-white;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: $radius-sm;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba($admin-primary, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.login-card .back-link {
+  display: inline-block;
+  margin-top: $spacing-lg;
+  color: $admin-primary;
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: $transition-normal;
+  border: none;
+  padding: 0;
+
+  &:hover {
+    color: $admin-secondary;
+    background-color: transparent;
+  }
+}
+
+.flash-messages {
+  margin-bottom: $spacing-lg;
+}
+
+.flash-message {
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-sm;
+  margin-bottom: $spacing-sm;
+  font-size: 0.875rem;
+  font-weight: 500;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.flash-success {
+  @include alert-success;
+}
+
+.flash-error {
+  @include alert-danger;
+}
+
+.flash-info {
+  @include alert-info;
+}
+
+.security-note {
+  margin-top: $spacing-lg;
+  padding: $spacing-md;
+  background-color: $neutral-100;
+  border-radius: $radius-sm;
+  border-left: 4px solid $admin-primary;
+
+  p {
+    margin: 0;
+    font-size: 0.75rem;
+    color: $admin-text-light;
+    line-height: 1.4;
+  }
+}
+
+// ============================================================================
 // RESPONSIVE DESIGN
 // ============================================================================
 
@@ -818,5 +980,17 @@ body {
     td:nth-child(8) {
       display: none;
     }
+  }
+
+  .login-container {
+    padding: $spacing-md;
+  }
+
+  .login-card {
+    padding: $spacing-lg;
+  }
+
+  .login-header h1 {
+    font-size: 1.5rem;
   }
 }
