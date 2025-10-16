@@ -34,12 +34,12 @@ class DiscogsSyncService:
             "Authorization": f"Discogs token={token}"
         }
     
-    def sync_all_listings(self) -> Dict[str, int]:
+    def sync_all_listings(self) -> Dict:
         """
         Fetch all listings from Discogs API and sync with database.
         
         Returns:
-            Dictionary with sync statistics (added, updated, removed)
+            Dictionary with sync statistics and detailed listing information
         """
         current_app.logger.info(f"Starting sync for seller: {self.seller_username}")
         
@@ -48,13 +48,19 @@ class DiscogsSyncService:
         
         if not api_listings:
             current_app.logger.warning("No listings fetched from API")
-            return {'added': 0, 'updated': 0, 'removed': 0, 'total': 0}
+            return {
+                'added': 0, 'updated': 0, 'removed': 0, 'total': 0,
+                'added_listings': [], 'updated_listings': [], 'removed_listings': []
+            }
         
         # Get current listing IDs from database
         existing_listings = {listing.listing_id: listing for listing in Listing.query.all()}
         api_listing_ids = set()
         
-        stats = {'added': 0, 'updated': 0, 'removed': 0, 'total': len(api_listings)}
+        stats = {
+            'added': 0, 'updated': 0, 'removed': 0, 'total': len(api_listings),
+            'added_listings': [], 'updated_listings': [], 'removed_listings': []
+        }
         
         # Process each API listing
         for api_listing in api_listings:
@@ -66,22 +72,50 @@ class DiscogsSyncService:
             
             api_listing_ids.add(listing_id)
             
+            # Create listing summary for tracking
+            listing_summary = {
+                'listing_id': listing_id,
+                'artist': flattened.get('primary_artist', 'Unknown Artist'),
+                'title': flattened.get('release_title', 'Unknown Title'),
+                'format': flattened.get('primary_format', ''),
+                'price': flattened.get('price_value', 0),
+                'currency': flattened.get('price_currency', ''),
+                'condition': flattened.get('condition', '')
+            }
+            
             if listing_id in existing_listings:
-                # Update existing listing
+                # Check if listing actually needs updating
                 listing = existing_listings[listing_id]
-                self._update_listing_from_dict(listing, flattened)
-                stats['updated'] += 1
+                changed_fields = self._get_changed_fields(listing, flattened)
+                if changed_fields:
+                    self._update_listing_from_dict(listing, flattened)
+                    stats['updated'] += 1
+                    # Add changed fields to listing summary
+                    listing_summary['changed_fields'] = changed_fields
+                    stats['updated_listings'].append(listing_summary)
             else:
                 # Create new listing
                 listing = Listing(**flattened)
                 db.session.add(listing)
                 stats['added'] += 1
+                stats['added_listings'].append(listing_summary)
         
         # Remove listings that are no longer in API response
         for listing_id, listing in existing_listings.items():
             if listing_id not in api_listing_ids:
+                # Create summary for removed listing
+                removed_summary = {
+                    'listing_id': listing_id,
+                    'artist': listing.primary_artist or 'Unknown Artist',
+                    'title': listing.release_title or 'Unknown Title',
+                    'format': listing.primary_format or '',
+                    'price': listing.price_value or 0,
+                    'currency': listing.price_currency or '',
+                    'condition': listing.condition or ''
+                }
                 db.session.delete(listing)
                 stats['removed'] += 1
+                stats['removed_listings'].append(removed_summary)
         
         # Commit all changes
         try:
@@ -283,6 +317,59 @@ class DiscogsSyncService:
         flattened['export_timestamp'] = datetime.now()
         
         return flattened
+    
+    def _get_changed_fields(self, listing: Listing, new_data: Dict) -> Dict[str, Dict]:
+        """
+        Get the fields that have changed between existing listing and new data.
+        
+        Args:
+            listing: Existing listing object
+            new_data: New data from API
+            
+        Returns:
+            Dictionary of changed fields with old and new values, or empty dict if no changes
+        """
+        # Key fields to compare for changes
+        key_fields = [
+            'status', 'condition', 'sleeve_condition', 'price_value', 'price_currency',
+            'shipping_price', 'shipping_currency', 'weight', 'format_quantity',
+            'external_id', 'location', 'comments', 'release_title', 'release_year',
+            'release_resource_url', 'release_uri', 'artist_names', 'primary_artist',
+            'label_names', 'primary_label', 'format_names', 'primary_format',
+            'genres', 'styles', 'country', 'catalog_number', 'barcode', 'master_id',
+            'master_url', 'image_uri', 'image_resource_url', 'release_community_have',
+            'release_community_want'
+        ]
+        
+        changed_fields = {}
+        
+        for field in key_fields:
+            if field in new_data:
+                current_value = getattr(listing, field, None)
+                new_value = new_data[field]
+                
+                # Handle different data types
+                has_changed = False
+                
+                if isinstance(current_value, float) and isinstance(new_value, (int, float)):
+                    # Compare floats with tolerance
+                    if abs(float(current_value or 0) - float(new_value or 0)) > 0.01:
+                        has_changed = True
+                elif isinstance(current_value, int) and isinstance(new_value, (int, float)):
+                    # Compare integers
+                    if int(current_value or 0) != int(new_value or 0):
+                        has_changed = True
+                elif str(current_value or '') != str(new_value or ''):
+                    # Compare strings
+                    has_changed = True
+                
+                if has_changed:
+                    changed_fields[field] = {
+                        'old': current_value,
+                        'new': new_value
+                    }
+        
+        return changed_fields
     
     def _update_listing_from_dict(self, listing: Listing, data: Dict):
         """
