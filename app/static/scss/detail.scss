@@ -31,7 +31,7 @@
   .vinyl-image {
     max-width: 400px;
     height: 400px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    box-shadow: $shadow-lg;
   }
   
   .vinyl-title {
@@ -154,7 +154,7 @@
     margin-bottom: $spacing-md;
     border-radius: $radius-sm;
     overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    box-shadow: $shadow-md;
     
     iframe {
       border-radius: $radius-sm;
@@ -261,7 +261,7 @@
     .label-overview-text {
       font-size: 0.95rem;
       line-height: 1.8;
-      color: #000;
+      color: $text-primary;
       opacity: 1;
       white-space: pre-line; // Preserve line breaks for bullet points
       
@@ -304,7 +304,7 @@
         font-size: 0.95rem;
         font-weight: bold;
         margin-bottom: $spacing-xs;
-        color: #000;
+        color: $text-primary;
       }
       
       .label-link-description {
