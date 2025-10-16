@@ -52,6 +52,9 @@ class AdminPanel {
         // Sync Discogs button
         document.getElementById('sync-discogs-btn').addEventListener('click', () => this.syncDiscogs());
         
+        // Clear Label Cache button
+        document.getElementById('clear-label-cache-btn').addEventListener('click', () => this.clearLabelCache());
+        
         // Modal controls
         document.getElementById('close-modal').addEventListener('click', () => this.closeModal());
         document.getElementById('log-modal').addEventListener('click', (e) => {
@@ -528,6 +531,61 @@ class AdminPanel {
             'release_community_want': 'Community Want'
         };
         return fieldNames[field] || field;
+    }
+
+    async clearLabelCache() {
+        const cacheBtn = document.getElementById('clear-label-cache-btn');
+        const originalText = cacheBtn.textContent;
+        
+        try {
+            // Update button state
+            cacheBtn.disabled = true;
+            cacheBtn.classList.add('syncing');
+            cacheBtn.textContent = '🗑️ Clearing...';
+            
+            const response = await fetch('/admin/clear-label-cache', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok && data.success) {
+                const successMessage = `
+                    <div class="sync-success">
+                        <h4>✅ Label Cache Cleared Successfully!</h4>
+                        <p class="sync-message">${data.message}</p>
+                        <p class="sync-note">Label overviews will be regenerated when users visit detail pages.</p>
+                    </div>
+                `;
+                this.showSyncModal(successMessage, false);
+            } else {
+                const errorMessage = `
+                    <div class="sync-error">
+                        <h4>❌ Cache Clear Failed</h4>
+                        <p class="error-text">${data.error || 'Unknown error occurred'}</p>
+                    </div>
+                `;
+                this.showSyncModal(errorMessage, false);
+            }
+            
+        } catch (error) {
+            console.error('Cache clear error:', error);
+            const errorMessage = `
+                <div class="sync-error">
+                    <h4>❌ Cache Clear Failed</h4>
+                    <p class="error-text">Network error: ${error.message}</p>
+                </div>
+            `;
+            this.showSyncModal(errorMessage, false);
+        } finally {
+            // Reset button state
+            cacheBtn.disabled = false;
+            cacheBtn.classList.remove('syncing');
+            cacheBtn.textContent = originalText;
+        }
     }
 
     applyFilters() {

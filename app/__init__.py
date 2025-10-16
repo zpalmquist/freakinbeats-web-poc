@@ -10,7 +10,7 @@ def create_app():
     """Create and configure the Flask application."""
     app = Flask(__name__)
     app.config.from_object(Config)
-    
+
     # Initialize extensions
     from app.extensions import db
     db.init_app(app)

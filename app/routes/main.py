@@ -1,4 +1,8 @@
-from flask import Blueprint, render_template, request, jsonify, current_app
+from flask import Blueprint, render_template, request, jsonify, current_app, session, redirect, url_for, flash
+from werkzeug.security import check_password_hash, generate_password_hash
+import hashlib
+import secrets
+import time
 from app.services.inventory_service import InventoryService
 from app.services.cart_service import CartService
 from app.services.discogs_sync_service import DiscogsSyncService
@@ -6,6 +10,31 @@ from app.models.access_log import AccessLog
 from app.extensions import db
 
 bp = Blueprint('main', __name__)
+
+def is_admin_authenticated():
+    """Check if user is authenticated as admin."""
+    return session.get('admin_authenticated', False)
+
+def require_admin_auth(f):
+    """Decorator to require admin authentication."""
+    from functools import wraps
+    
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not is_admin_authenticated():
+            return redirect(url_for('main.admin_login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def verify_admin_passphrase(passphrase):
+    """Verify admin passphrase against stored hash."""
+    stored_passphrase = current_app.config.get('ADMIN_PASSPHRASE')
+    if not stored_passphrase:
+        current_app.logger.warning("ADMIN_PASSPHRASE not configured")
+        return False
+    
+    # Use constant-time comparison to prevent timing attacks
+    return secrets.compare_digest(passphrase, stored_passphrase)
 
 @bp.route('/')
 def index():
@@ -79,12 +108,60 @@ def prepare_payment():
     except Exception as e:
         return jsonify({'error': f'Failed to prepare payment: {str(e)}'}), 500
 
+@bp.route('/admin-login', methods=['GET', 'POST'])
+def admin_login():
+    """Admin login page with passphrase authentication."""
+    if request.method == 'POST':
+        # Simple rate limiting - check for failed attempts
+        failed_attempts = session.get('admin_login_attempts', 0)
+        last_attempt = session.get('admin_login_last_attempt', 0)
+        current_time = time.time()
+        
+        # Reset attempts after 15 minutes
+        if current_time - last_attempt > 900:  # 15 minutes
+            failed_attempts = 0
+        
+        # Block after 5 failed attempts for 15 minutes
+        if failed_attempts >= 5:
+            if current_time - last_attempt < 900:  # 15 minutes
+                flash('Too many failed attempts. Please try again in 15 minutes.', 'error')
+                return render_template('admin_login.html')
+            else:
+                failed_attempts = 0
+        
+        passphrase = request.form.get('passphrase', '').strip()
+        
+        if verify_admin_passphrase(passphrase):
+            # Reset failed attempts on successful login
+            session.pop('admin_login_attempts', None)
+            session.pop('admin_login_last_attempt', None)
+            session['admin_authenticated'] = True
+            session.permanent = True  # Make session permanent
+            flash('Successfully logged in as admin.', 'success')
+            return redirect(url_for('main.admin'))
+        else:
+            # Increment failed attempts
+            session['admin_login_attempts'] = failed_attempts + 1
+            session['admin_login_last_attempt'] = current_time
+            flash('Invalid passphrase. Please try again.', 'error')
+    
+    return render_template('admin_login.html')
+
+@bp.route('/admin-logout', methods=['POST'])
+def admin_logout():
+    """Logout admin user."""
+    session.pop('admin_authenticated', None)
+    flash('Successfully logged out.', 'info')
+    return redirect(url_for('main.admin_login'))
+
 @bp.route('/admin')
+@require_admin_auth
 def admin():
-    """Admin page for viewing access logs - standalone page accessible only via direct URL."""
+    """Admin page for viewing access logs - requires authentication."""
     return render_template('admin.html')
 
 @bp.route('/admin/access-logs')
+@require_admin_auth
 def get_access_logs():
     """API endpoint to fetch access logs with pagination and filtering."""
     try:
@@ -145,6 +222,7 @@ def get_access_logs():
         return jsonify({'error': f'Failed to fetch access logs: {str(e)}'}), 500
 
 @bp.route('/admin/sync-discogs', methods=['POST'])
+@require_admin_auth
 def sync_discogs():
     """Trigger Discogs synchronization from admin panel."""
     try:
@@ -179,3 +257,74 @@ def sync_discogs():
     except Exception as e:
         current_app.logger.error(f"Error during Discogs sync: {e}")
         return jsonify({'error': f'Discogs sync failed: {str(e)}'}), 500
+
+@bp.route('/admin/clear-label-cache', methods=['POST'])
+@require_admin_auth
+def clear_label_cache():
+    """Clear cached label overviews to force regeneration."""
+    try:
+        from app.models.label_info import LabelInfo
+        
+        # Clear all cached label overviews
+        deleted_count = LabelInfo.query.delete()
+        db.session.commit()
+        
+        current_app.logger.info(f"Cleared {deleted_count} cached label overviews")
+        
+        return jsonify({
+            'success': True,
+            'message': f'Cleared {deleted_count} cached label overviews',
+            'cleared_count': deleted_count
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"Error clearing label cache: {e}")
+        return jsonify({'error': f'Failed to clear label cache: {str(e)}'}), 500
+
+@bp.route('/admin/regenerate-label-overview', methods=['POST'])
+@require_admin_auth
+def regenerate_label_overview():
+    """Regenerate overview for a specific label."""
+    try:
+        data = request.get_json()
+        label_name = data.get('label_name')
+        
+        if not label_name:
+            return jsonify({'error': 'Label name is required'}), 400
+        
+        from app.models.label_info import LabelInfo
+        from app.services.gemini_service import GeminiService
+        
+        # Remove existing cache entry
+        LabelInfo.query.filter_by(label_name=label_name).delete()
+        
+        # Generate new overview
+        gemini = GeminiService()
+        if gemini.is_available():
+            overview = gemini.generate_label_overview(label_name)
+            
+            if overview:
+                # Cache the new overview
+                label_info = LabelInfo(
+                    label_name=label_name,
+                    overview=overview,
+                    generated_by='gemini-1.5-flash'
+                )
+                db.session.add(label_info)
+                db.session.commit()
+                
+                return jsonify({
+                    'success': True,
+                    'message': f'Regenerated overview for {label_name}',
+                    'overview': overview
+                })
+            else:
+                return jsonify({'error': 'Failed to generate overview'}), 500
+        else:
+            return jsonify({'error': 'Gemini service not available'}), 500
+        
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"Error regenerating label overview: {e}")
+        return jsonify({'error': f'Failed to regenerate overview: {str(e)}'}), 500
