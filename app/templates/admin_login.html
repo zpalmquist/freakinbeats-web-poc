@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login - Freakin Beats</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    {% assets "admin_css" %}
+        <link rel="stylesheet" href="{{ ASSET_URL }}">
+    {% endassets %}
     <style>
         .login-container {
             min-height: 100vh;

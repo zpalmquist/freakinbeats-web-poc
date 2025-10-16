@@ -1,0 +1,822 @@
+// ============================================================================
+// ADMIN PANEL STYLES
+// ============================================================================
+// Created: October 15, 2025
+// Part of: Phase 1B Refactoring - Admin Styles Migration
+// Purpose: Refactored admin panel using unified design system from Phase 1A
+// ============================================================================
+
+@import 'variables';
+@import 'components';
+
+// ============================================================================
+// GLOBAL RESET AND BASE STYLES
+// ============================================================================
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: $font-stack;
+  background-color: $admin-bg-light;
+  color: $admin-text-dark;
+  line-height: $line-height-base;
+}
+
+// ============================================================================
+// LAYOUT
+// ============================================================================
+
+.admin-container {
+  @include container;
+}
+
+// ============================================================================
+// HEADER
+// ============================================================================
+
+.admin-header {
+  background: linear-gradient(135deg, $admin-primary 0%, $admin-secondary 100%);
+  color: $text-white;
+  padding: $spacing-lg;
+  border-radius: $radius-md;
+  margin-bottom: $spacing-lg;
+  box-shadow: $shadow-lg;
+
+  h1 {
+    font-size: 2.5rem;
+    margin-bottom: $spacing-xs;
+    font-weight: 600;
+  }
+}
+
+.admin-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: $spacing-md;
+}
+
+.back-link {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  font-size: 1.1rem;
+  padding: $spacing-sm $spacing-md;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: $radius-sm;
+  transition: $transition-normal;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: $text-white;
+  }
+}
+
+// ============================================================================
+// BUTTONS
+// ============================================================================
+
+.btn {
+  @include btn-base;
+}
+
+.btn-primary {
+  @include btn-admin-primary;
+}
+
+.btn-secondary {
+  @include btn-admin-secondary;
+}
+
+.btn-small {
+  @include btn-small;
+}
+
+.btn-large {
+  @include btn-large;
+}
+
+.btn-danger {
+  @include btn-danger;
+}
+
+.btn-success {
+  @include btn-success;
+}
+
+// Sync button with custom styling
+.sync-btn {
+  @include btn-base;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: $text-white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  margin-left: $spacing-md;
+
+  &:hover:not(:disabled) {
+    background-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  &.syncing {
+    background-color: rgba(255, 193, 7, 0.3);
+    border-color: rgba(255, 193, 7, 0.5);
+
+    &::after {
+      content: '';
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top: 2px solid $text-white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-left: $spacing-xs;
+      vertical-align: middle;
+    }
+  }
+}
+
+// ============================================================================
+// FILTERS SECTION
+// ============================================================================
+
+.filters-section {
+  @include card;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-lg;
+}
+
+.filter-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr auto auto;
+  gap: $spacing-md;
+  align-items: end;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+
+  label {
+    @include label-base;
+  }
+
+  input,
+  select {
+    @include input-base;
+  }
+}
+
+// ============================================================================
+// STATS SECTION
+// ============================================================================
+
+.stats-section {
+  margin-bottom: $spacing-lg;
+}
+
+.stats-grid {
+  @include grid-auto(200px, $spacing-md);
+}
+
+.stat-card {
+  @include stat-card;
+  
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: $admin-primary;
+  margin-bottom: $spacing-xs;
+}
+
+.stat-label {
+  color: $admin-text-light;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+// ============================================================================
+// LOADING AND ERROR STATES
+// ============================================================================
+
+.loading {
+  text-align: center;
+  padding: $spacing-xl;
+  background: $admin-bg-white;
+  border-radius: $radius-md;
+  margin-bottom: $spacing-lg;
+}
+
+.spinner {
+  @include loading-spinner;
+  margin: 0 auto $spacing-md;
+}
+
+.error-message {
+  @include alert-danger;
+  margin-bottom: $spacing-lg;
+}
+
+.hidden {
+  display: none !important;
+}
+
+// ============================================================================
+// LOGS SECTION
+// ============================================================================
+
+.logs-section {
+  @include card;
+  overflow: hidden;
+}
+
+.logs-header {
+  @include section-header;
+  padding: $spacing-lg;
+  border-bottom: 1px solid $table-border;
+}
+
+.logs-controls {
+  display: flex;
+  gap: $spacing-xs;
+}
+
+// ============================================================================
+// TABLE
+// ============================================================================
+
+.table-container {
+  overflow-x: auto;
+}
+
+.logs-table {
+  @include table-base;
+
+  th {
+    background-color: $neutral-100;
+    padding: $spacing-md $spacing-sm;
+    text-align: left;
+    font-weight: 600;
+    color: $admin-text-medium;
+    border-bottom: 2px solid $table-border;
+    position: sticky;
+    top: 0;
+    z-index: $z-sticky;
+  }
+
+  td {
+    padding: $spacing-sm;
+    border-bottom: 1px solid $table-border;
+    vertical-align: top;
+  }
+
+  tbody tr:hover {
+    background-color: $neutral-100;
+  }
+}
+
+// ============================================================================
+// BADGES
+// ============================================================================
+
+.status-badge {
+  @include badge-base;
+  min-width: 50px;
+}
+
+.status-200 { @include badge($status-success-bg, $status-success); }
+.status-404 { @include badge($status-warning-bg, $status-warning); }
+.status-500 { @include badge($status-danger-bg, $status-danger); }
+.status-302 { @include badge($status-info-bg, $status-info); }
+.status-400 { @include badge($status-danger-bg, $status-danger); }
+
+.method-badge {
+  @include badge-base;
+  min-width: 50px;
+}
+
+.method-GET { @include badge-success; }
+.method-POST { @include badge-info; }
+.method-PUT { @include badge-warning; }
+.method-DELETE { @include badge-danger; }
+.method-PATCH { @include badge($neutral-300, $neutral-700); }
+
+// ============================================================================
+// UTILITY CLASSES
+// ============================================================================
+
+.truncated {
+  @include truncate;
+  max-width: 200px;
+
+  &:hover {
+    white-space: normal;
+    word-break: break-all;
+  }
+}
+
+// ============================================================================
+// PAGINATION
+// ============================================================================
+
+.pagination {
+  @include pagination;
+  padding: $spacing-md $spacing-lg;
+  background-color: $neutral-100;
+  border-top: 1px solid $table-border;
+}
+
+.pagination-info {
+  color: $admin-text-light;
+  font-size: 0.9rem;
+}
+
+.pagination-controls {
+  display: flex;
+  gap: $spacing-xs;
+  align-items: center;
+
+  button {
+    padding: $spacing-xs $spacing-sm;
+    border: 1px solid $input-border;
+    background: $admin-bg-white;
+    border-radius: $radius-xs;
+    cursor: pointer;
+    transition: $transition-normal;
+
+    &:hover:not(:disabled) {
+      background-color: $admin-primary;
+      color: $text-white;
+      border-color: $admin-primary;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  .current-page {
+    padding: $spacing-xs $spacing-sm;
+    background-color: $admin-primary;
+    color: $text-white;
+    border-radius: $radius-xs;
+    font-weight: 600;
+  }
+}
+
+// ============================================================================
+// MODAL
+// ============================================================================
+
+.modal {
+  @include modal-backdrop;
+}
+
+.modal-content {
+  @include modal-content;
+  max-width: 800px;
+  max-height: 90vh;
+  width: 90%;
+}
+
+.modal-header {
+  @include modal-header;
+  background-color: $neutral-100;
+}
+
+.modal-close {
+  @include modal-close-btn;
+}
+
+.modal-body {
+  @include modal-body;
+  max-height: calc(90vh - 80px);
+}
+
+// ============================================================================
+// LOG DETAIL (Modal Content)
+// ============================================================================
+
+.log-detail {
+  display: grid;
+  gap: $spacing-md;
+}
+
+.log-detail-row {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: $spacing-md;
+  padding: $spacing-xs 0;
+  border-bottom: 1px solid $table-border;
+}
+
+.log-detail-label {
+  font-weight: 600;
+  color: $admin-text-medium;
+}
+
+.log-detail-value {
+  word-break: break-all;
+  font-family: $font-mono;
+  font-size: 0.9rem;
+  background-color: $neutral-100;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $radius-xs;
+  border: 1px solid $table-border;
+}
+
+// ============================================================================
+// SYNC MODAL STYLES
+// ============================================================================
+
+.sync-loading {
+  text-align: center;
+  padding: $spacing-md;
+
+  .spinner {
+    margin: 0 auto $spacing-md;
+  }
+}
+
+.sync-note {
+  color: $admin-text-light;
+  font-style: italic;
+  margin-top: $spacing-xs;
+}
+
+.sync-success {
+  padding: $spacing-md;
+
+  h4 {
+    color: $status-success;
+    margin-bottom: $spacing-md;
+    text-align: center;
+  }
+}
+
+.sync-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.stat-item {
+  background-color: $neutral-100;
+  padding: $spacing-md;
+  border-radius: $radius-sm;
+  border-left: 4px solid $status-success;
+
+  strong {
+    color: $status-success;
+  }
+}
+
+.sync-message {
+  text-align: center;
+  color: $admin-text-light;
+  font-style: italic;
+  margin-top: $spacing-md;
+}
+
+.sync-error {
+  padding: $spacing-md;
+  text-align: center;
+
+  h4 {
+    color: $status-danger;
+    margin-bottom: $spacing-md;
+  }
+}
+
+.error-text {
+  color: $admin-text-light;
+  background-color: $status-danger-bg;
+  padding: $spacing-xs $spacing-md;
+  border-radius: $radius-sm;
+  border: 1px solid $status-danger-border;
+}
+
+// ============================================================================
+// LISTING DETAILS STYLES
+// ============================================================================
+
+.listing-section {
+  margin-top: $spacing-lg;
+  border-top: 1px solid $table-border;
+  padding-top: $spacing-md;
+}
+
+.listing-section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: $spacing-md;
+  padding: $spacing-xs $spacing-md;
+  border-radius: $radius-sm;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+
+  &.added {
+    @include badge-success;
+    border-left: 4px solid $status-success;
+  }
+
+  &.updated {
+    @include badge-warning;
+    border-left: 4px solid $status-warning;
+  }
+
+  &.removed {
+    @include badge-danger;
+    border-left: 4px solid $status-danger;
+  }
+}
+
+.listing-list {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid $table-border;
+  border-radius: $radius-sm;
+  background-color: $neutral-100;
+}
+
+.listing-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-sm $spacing-md;
+  border-bottom: 1px solid $table-border;
+  transition: background-color $transition-fast;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background-color: $neutral-200;
+  }
+
+  &.listing-added {
+    border-left: 3px solid $status-success;
+  }
+
+  &.listing-updated {
+    border-left: 3px solid $status-warning;
+  }
+
+  &.listing-removed {
+    border-left: 3px solid $status-danger;
+  }
+}
+
+.listing-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.listing-artist {
+  font-weight: 600;
+  color: $admin-text-dark;
+  margin-bottom: 4px;
+  font-size: 0.95rem;
+}
+
+.listing-title {
+  color: $admin-text-medium;
+  margin-bottom: 4px;
+  font-size: 0.9rem;
+  @include truncate;
+}
+
+.listing-meta {
+  color: $admin-text-light;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.listing-id {
+  color: $admin-text-muted;
+  font-size: 0.8rem;
+  font-family: $font-mono;
+  background-color: $neutral-200;
+  padding: 4px $spacing-xs;
+  border-radius: $radius-xs;
+  margin-left: $spacing-md;
+  flex-shrink: 0;
+}
+
+// ============================================================================
+// FIELD CHANGES STYLES
+// ============================================================================
+
+.listing-changes {
+  margin-top: $spacing-xs;
+  padding: $spacing-xs $spacing-sm;
+  background-color: $neutral-100;
+  border-radius: $radius-xs;
+  border: 1px solid $neutral-200;
+}
+
+.changes-header {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: $neutral-700;
+  margin-bottom: 6px;
+}
+
+.field-change {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+  font-size: 0.8rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.field-name {
+  font-weight: 600;
+  color: $neutral-700;
+  min-width: 120px;
+  margin-right: $spacing-xs;
+}
+
+.field-change-values {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.old-value {
+  background-color: $status-danger-bg;
+  color: $status-danger;
+  padding: 2px 6px;
+  border-radius: $radius-xs;
+  font-size: 0.75rem;
+  font-family: $font-mono;
+}
+
+.change-arrow {
+  color: $neutral-600;
+  font-weight: bold;
+}
+
+.new-value {
+  background-color: $status-success-bg;
+  color: $status-success;
+  padding: 2px 6px;
+  border-radius: $radius-xs;
+  font-size: 0.75rem;
+  font-family: $font-mono;
+}
+
+.listing-changes em {
+  font-style: italic;
+  color: $neutral-600;
+}
+
+// ============================================================================
+// RESPONSIVE DESIGN
+// ============================================================================
+
+@media (max-width: $breakpoint-xl) {
+  .filter-row {
+    grid-template-columns: 1fr 1fr;
+    gap: $spacing-md;
+
+    .btn {
+      grid-column: 1 / -1;
+      justify-self: start;
+    }
+  }
+}
+
+@media (max-width: $breakpoint-md) {
+  .admin-container {
+    padding: $spacing-xs;
+  }
+
+  .admin-header {
+    padding: $spacing-md;
+
+    h1 {
+      font-size: 2rem;
+    }
+  }
+
+  .admin-nav {
+    flex-direction: column;
+    gap: $spacing-xs;
+    align-items: stretch;
+  }
+
+  .sync-btn {
+    margin-left: 0;
+    margin-top: $spacing-xs;
+  }
+
+  .filter-row {
+    grid-template-columns: 1fr;
+    gap: $spacing-md;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .logs-header {
+    flex-direction: column;
+    gap: $spacing-md;
+    align-items: stretch;
+  }
+
+  .logs-controls {
+    justify-content: center;
+  }
+
+  .pagination {
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  .logs-table {
+    font-size: 0.85rem;
+
+    th,
+    td {
+      padding: $spacing-xs;
+    }
+  }
+
+  .modal-content {
+    width: 95%;
+    margin: $spacing-xs;
+  }
+
+  .log-detail-row {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+
+  .listing-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: $spacing-xs;
+  }
+
+  .listing-id {
+    margin-left: 0;
+    align-self: flex-end;
+  }
+
+  .listing-list {
+    max-height: 250px;
+  }
+
+  .field-change {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .field-name {
+    min-width: auto;
+    margin-right: 0;
+  }
+
+  .field-change-values {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: $breakpoint-sm) {
+  .logs-table {
+    th:nth-child(6),
+    th:nth-child(7),
+    th:nth-child(8),
+    td:nth-child(6),
+    td:nth-child(7),
+    td:nth-child(8) {
+      display: none;
+    }
+  }
+}

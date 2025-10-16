@@ -24,11 +24,13 @@ def create_app():
     cart_scss = Bundle('scss/cart.scss', filters='libsass', output='css/cart.css')
     checkout_scss = Bundle('scss/checkout.scss', filters='libsass', output='css/checkout.css')
     detail_scss = Bundle('scss/detail.scss', filters='libsass', output='css/detail.css')
+    admin_scss = Bundle('scss/admin.scss', filters='libsass', output='css/admin.css')
     
     assets.register('main_css', main_scss)
     assets.register('cart_css', cart_scss)
     assets.register('checkout_css', checkout_scss)
     assets.register('detail_css', detail_scss)
+    assets.register('admin_css', admin_scss)
     
     # Import models before creating tables
     from app.models import listing, access_log  # noqa: F401

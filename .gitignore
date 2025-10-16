@@ -1,5 +1,6 @@
 # Flask-Assets generated files
 app/static/css/all.css
+app/static/css/admin.css
 app/static/.webassets-cache/
 
 # Test outputs
