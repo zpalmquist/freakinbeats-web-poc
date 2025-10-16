@@ -1,0 +1,775 @@
+// ============================================================================
+// REUSABLE COMPONENT MIXINS
+// ============================================================================
+// Created: October 15, 2025
+// Part of: Phase 1A Refactoring - Unified Design System
+// ============================================================================
+
+@import 'variables';
+
+// ============================================================================
+// BUTTON SYSTEM
+// ============================================================================
+
+@mixin btn-base {
+  display: inline-block;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  border: none;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  transition: $transition-normal;
+  user-select: none;
+  white-space: nowrap;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba($admin-primary, 0.3);
+  }
+}
+
+@mixin btn-admin-primary {
+  @include btn-base;
+  background: linear-gradient(135deg, $admin-primary, $admin-secondary);
+  color: $text-white;
+  box-shadow: $shadow-sm;
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, darken($admin-primary, 5%), darken($admin-secondary, 5%));
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: $shadow-sm;
+  }
+}
+
+@mixin btn-admin-secondary {
+  @include btn-base;
+  background: $neutral-200;
+  color: $admin-text-dark;
+  border: 1px solid $neutral-300;
+
+  &:hover:not(:disabled) {
+    background: $neutral-300;
+    border-color: $neutral-400;
+  }
+}
+
+@mixin btn-danger {
+  @include btn-base;
+  background: $status-danger;
+  color: $text-white;
+
+  &:hover:not(:disabled) {
+    background: darken($status-danger, 10%);
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+  }
+}
+
+@mixin btn-success {
+  @include btn-base;
+  background: $status-success;
+  color: $text-white;
+
+  &:hover:not(:disabled) {
+    background: darken($status-success, 10%);
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+  }
+}
+
+@mixin btn-outline {
+  @include btn-base;
+  background: transparent;
+  color: $admin-primary;
+  border: 2px solid $admin-primary;
+
+  &:hover:not(:disabled) {
+    background: $admin-primary;
+    color: $text-white;
+  }
+}
+
+@mixin btn-small {
+  padding: 8px 16px;
+  font-size: 0.875rem;
+}
+
+@mixin btn-large {
+  padding: 16px 32px;
+  font-size: 1.125rem;
+}
+
+// ============================================================================
+// CARD SYSTEM
+// ============================================================================
+
+@mixin card {
+  background: $admin-bg-white;
+  border-radius: $radius-md;
+  padding: $spacing-lg;
+  box-shadow: $shadow-md;
+  transition: $transition-normal;
+}
+
+@mixin card-hover {
+  @include card;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $shadow-lg;
+  }
+}
+
+@mixin glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: $radius-lg;
+  padding: $spacing-xl;
+  box-shadow: $shadow-lg;
+}
+
+@mixin stat-card {
+  @include card;
+  text-align: center;
+
+  .stat-label {
+    font-size: 0.875rem;
+    color: $admin-text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: $spacing-sm;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: $admin-primary;
+    line-height: 1;
+  }
+
+  .stat-change {
+    font-size: 0.875rem;
+    margin-top: $spacing-sm;
+    
+    &.positive {
+      color: $status-success;
+    }
+    
+    &.negative {
+      color: $status-danger;
+    }
+  }
+}
+
+// ============================================================================
+// MODAL SYSTEM
+// ============================================================================
+
+@mixin modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: $modal-backdrop;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: $z-modal-backdrop;
+  animation: modalFadeIn $transition-fast;
+  padding: $spacing-lg;
+
+  &.hidden {
+    display: none;
+  }
+}
+
+@mixin modal-content {
+  background: $admin-bg-white;
+  border-radius: $radius-md;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: $shadow-xl;
+  animation: fadeIn $transition-normal;
+  display: flex;
+  flex-direction: column;
+}
+
+@mixin modal-header {
+  padding: $spacing-lg;
+  border-bottom: 1px solid $neutral-200;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  h2, h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: $admin-text-dark;
+  }
+}
+
+@mixin modal-body {
+  padding: $spacing-lg;
+  overflow-y: auto;
+  flex: 1;
+}
+
+@mixin modal-footer {
+  padding: $spacing-lg;
+  border-top: 1px solid $neutral-200;
+  display: flex;
+  gap: $spacing-sm;
+  justify-content: flex-end;
+}
+
+@mixin modal-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: $admin-text-muted;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: $transition-fast;
+
+  &:hover {
+    background: $neutral-200;
+    color: $admin-text-dark;
+  }
+}
+
+// ============================================================================
+// BADGE SYSTEM
+// ============================================================================
+
+@mixin badge-base {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: $radius-xs;
+  line-height: 1;
+}
+
+@mixin badge($bg, $text) {
+  @include badge-base;
+  background: $bg;
+  color: $text;
+}
+
+@mixin badge-success {
+  @include badge($status-success-bg, $status-success);
+  border: 1px solid $status-success-border;
+}
+
+@mixin badge-warning {
+  @include badge($status-warning-bg, $status-warning);
+  border: 1px solid $status-warning-border;
+}
+
+@mixin badge-danger {
+  @include badge($status-danger-bg, $status-danger);
+  border: 1px solid $status-danger-border;
+}
+
+@mixin badge-info {
+  @include badge($status-info-bg, $status-info);
+  border: 1px solid $status-info-border;
+}
+
+@mixin badge-pill {
+  border-radius: $radius-pill;
+}
+
+// ============================================================================
+// TABLE SYSTEM
+// ============================================================================
+
+@mixin table-base {
+  width: 100%;
+  border-collapse: collapse;
+  background: $admin-bg-white;
+  border-radius: $radius-md;
+  overflow: hidden;
+  box-shadow: $shadow-sm;
+
+  th {
+    background: $neutral-100;
+    color: $admin-text-dark;
+    font-weight: 600;
+    text-align: left;
+    padding: $spacing-md $spacing-lg;
+    border-bottom: 2px solid $neutral-300;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  td {
+    padding: $spacing-md $spacing-lg;
+    border-bottom: 1px solid $neutral-200;
+    color: $admin-text-medium;
+  }
+
+  tbody tr {
+    transition: $transition-fast;
+
+    &:hover {
+      background: $table-hover;
+    }
+
+    &:last-child td {
+      border-bottom: none;
+    }
+  }
+}
+
+@mixin table-striped {
+  tbody tr:nth-child(even) {
+    background: $neutral-100;
+
+    &:hover {
+      background: darken($neutral-100, 2%);
+    }
+  }
+}
+
+@mixin table-responsive {
+  overflow-x: auto;
+
+  @media (max-width: $breakpoint-md) {
+    table {
+      font-size: 0.875rem;
+    }
+
+    th, td {
+      padding: $spacing-sm;
+      white-space: nowrap;
+    }
+  }
+}
+
+// ============================================================================
+// FORM ELEMENTS
+// ============================================================================
+
+@mixin label-base {
+  display: block;
+  font-weight: 600;
+  color: $admin-text-dark;
+  margin-bottom: $spacing-xs;
+  font-size: 0.875rem;
+}
+
+@mixin input-base {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid $input-border;
+  border-radius: $radius-sm;
+  font-size: 1rem;
+  color: $admin-text-dark;
+  background: $admin-bg-white;
+  transition: $transition-fast;
+
+  &:focus {
+    outline: none;
+    border-color: $input-focus;
+    box-shadow: 0 0 0 3px rgba($input-focus, 0.1);
+  }
+
+  &:disabled {
+    background: $neutral-100;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  &::placeholder {
+    color: $admin-text-muted;
+  }
+}
+
+@mixin select-base {
+  @include input-base;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+@mixin textarea-base {
+  @include input-base;
+  resize: vertical;
+  min-height: 100px;
+}
+
+@mixin checkbox-base {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: $admin-primary;
+}
+
+// ============================================================================
+// LAYOUT HELPERS
+// ============================================================================
+
+@mixin container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 $spacing-lg;
+
+  @media (max-width: $breakpoint-sm) {
+    padding: 0 $spacing-md;
+  }
+}
+
+@mixin section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-xl;
+
+  h1, h2, h3 {
+    margin: 0;
+    color: $admin-text-dark;
+  }
+
+  .actions {
+    display: flex;
+    gap: $spacing-sm;
+    align-items: center;
+  }
+
+  @media (max-width: $breakpoint-sm) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-md;
+
+    .actions {
+      width: 100%;
+    }
+  }
+}
+
+@mixin grid-auto($min-width: 250px, $gap: $spacing-lg) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax($min-width, 1fr));
+  gap: $gap;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// ============================================================================
+// UTILITY MIXINS
+// ============================================================================
+
+@mixin truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin line-clamp($lines: 2) {
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@mixin loading-spinner {
+  border: 3px solid $neutral-200;
+  border-top-color: $admin-primary;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 0.8s linear infinite;
+}
+
+@mixin fade-in {
+  animation: fadeIn $transition-normal;
+}
+
+@mixin slide-down {
+  animation: slideDown $transition-normal;
+}
+
+@mixin hover-lift {
+  transition: transform $transition-normal;
+
+  &:hover {
+    transform: translateY(-4px);
+  }
+}
+
+@mixin hover-scale {
+  transition: transform $transition-normal;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+// ============================================================================
+// PAGINATION
+// ============================================================================
+
+@mixin pagination {
+  display: flex;
+  gap: $spacing-xs;
+  align-items: center;
+  justify-content: center;
+  margin-top: $spacing-xl;
+
+  .page-link {
+    padding: 8px 12px;
+    border: 1px solid $neutral-300;
+    border-radius: $radius-xs;
+    color: $admin-text-dark;
+    text-decoration: none;
+    transition: $transition-fast;
+    min-width: 40px;
+    text-align: center;
+
+    &:hover:not(.active):not(.disabled) {
+      background: $neutral-100;
+      border-color: $admin-primary;
+      color: $admin-primary;
+    }
+
+    &.active {
+      background: $admin-primary;
+      color: $text-white;
+      border-color: $admin-primary;
+      cursor: default;
+    }
+
+    &.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+  }
+
+  .page-info {
+    color: $admin-text-muted;
+    font-size: 0.875rem;
+    margin: 0 $spacing-sm;
+  }
+}
+
+// ============================================================================
+// ALERT MESSAGES
+// ============================================================================
+
+@mixin alert-base {
+  padding: $spacing-md $spacing-lg;
+  border-radius: $radius-sm;
+  border: 1px solid;
+  margin-bottom: $spacing-lg;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+
+  .alert-icon {
+    flex-shrink: 0;
+  }
+
+  .alert-content {
+    flex: 1;
+  }
+
+  .alert-title {
+    font-weight: 600;
+    margin-bottom: $spacing-xs;
+  }
+
+  .alert-close {
+    @include modal-close-btn;
+    margin-left: auto;
+  }
+}
+
+@mixin alert-success {
+  @include alert-base;
+  background: $status-success-bg;
+  border-color: $status-success-border;
+  color: $status-success;
+}
+
+@mixin alert-warning {
+  @include alert-base;
+  background: $status-warning-bg;
+  border-color: $status-warning-border;
+  color: $status-warning;
+}
+
+@mixin alert-danger {
+  @include alert-base;
+  background: $status-danger-bg;
+  border-color: $status-danger-border;
+  color: $status-danger;
+}
+
+@mixin alert-info {
+  @include alert-base;
+  background: $status-info-bg;
+  border-color: $status-info-border;
+  color: $status-info;
+}
+
+// ============================================================================
+// ANIMATIONS
+// ============================================================================
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+// ============================================================================
+// SCROLLBAR STYLING
+// ============================================================================
+
+@mixin custom-scrollbar($track-bg: rgba(0,0,0,0.05), $thumb-bg: rgba(0,0,0,0.2)) {
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $track-bg;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $thumb-bg;
+    border-radius: 4px;
+
+    &:hover {
+      background: darken($thumb-bg, 10%);
+    }
+  }
+}
+
+// ============================================================================
+// RESPONSIVE UTILITIES
+// ============================================================================
+
+@mixin responsive-text($mobile: 0.875rem, $tablet: 1rem, $desktop: 1.125rem) {
+  font-size: $mobile;
+
+  @media (min-width: $breakpoint-md) {
+    font-size: $tablet;
+  }
+
+  @media (min-width: $breakpoint-lg) {
+    font-size: $desktop;
+  }
+}
+
+@mixin hide-on-mobile {
+  @media (max-width: $breakpoint-md) {
+    display: none !important;
+  }
+}
+
+@mixin hide-on-desktop {
+  @media (min-width: $breakpoint-md) {
+    display: none !important;
+  }
+}
+
+// ============================================================================
+// END OF COMPONENT MIXINS
+// ============================================================================
