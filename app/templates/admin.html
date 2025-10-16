@@ -15,6 +15,14 @@ x<!DOCTYPE html>
                 <button id="sync-discogs-btn" class="sync-btn">
                     🔄 Sync Discogs
                 </button>
+                <button id="clear-label-cache-btn" class="sync-btn">
+                    🗑️ Clear Gemini AI Label Info
+                </button>
+                <form method="POST" action="{{ url_for('main.admin_logout') }}" style="display: inline;">
+                    <button type="submit" class="sync-btn logout-btn" style="background-color: #dc3545;">
+                        🚪 Logout
+                    </button>
+                </form>
             </div>
         </header>
 

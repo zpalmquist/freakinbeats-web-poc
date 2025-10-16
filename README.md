@@ -55,35 +55,76 @@ The application will automatically sync with Discogs API on startup and then hou
 ```
 app/
 ├── models/
-│   ├── listing.py       # SQLAlchemy models
-│   └── access_log.py    # Access logging model
+│   ├── listing.py       # SQLAlchemy models for vinyl listings
+│   ├── access_log.py    # Access logging model
+│   └── label_info.py    # AI-generated label overviews cache
 ├── routes/
-│   ├── api.py           # API endpoints
-│   └── main.py          # Page routes (including checkout)
+│   ├── api.py           # API endpoints for data access
+│   └── main.py          # Page routes (including admin & checkout)
 ├── services/
-│   ├── inventory_service.py    # Database queries
-│   ├── discogs_sync_service.py # API sync
-│   └── cart_service.py         # Cart validation & calculations
+│   ├── inventory_service.py    # Database queries & filtering
+│   ├── discogs_sync_service.py # Discogs API synchronization
+│   ├── cart_service.py         # Cart validation & calculations
+│   └── gemini_service.py       # AI label overview generation
+├── middleware/
+│   └── access_logger.py # Request logging middleware
 ├── static/
-│   ├── scss/            # SCSS stylesheets
-│   │   ├── checkout.scss      # Checkout page styles
-│   │   └── _variables.scss    # Global variables
+│   ├── css/             # Compiled CSS files
+│   │   ├── admin.css    # Admin panel styles
+│   │   ├── cart.css     # Shopping cart styles
+│   │   ├── checkout.css # Checkout page styles
+│   │   ├── detail.css   # Product detail styles
+│   │   └── main.css     # Main site styles
+│   ├── scss/            # SCSS source files
+│   │   ├── _base.scss   # Base styles & mixins
+│   │   ├── _filters.scss # Search & filter styles
+│   │   ├── _variables.scss # Global variables
+│   │   ├── _vinyl.scss  # Vinyl-specific styles
+│   │   ├── cart.scss    # Cart page styles
+│   │   ├── checkout.scss # Checkout page styles
+│   │   ├── detail.scss  # Product detail styles
+│   │   └── main.scss    # Main site styles
 │   └── js/              # JavaScript modules
-│       ├── cart-utils.js      # Shared cart utilities
-│       ├── cart.js            # Cart page logic
-│       ├── checkout.js        # Checkout page logic
-│       └── detail.js          # Product detail logic
+│       ├── admin.js     # Admin panel functionality
+│       ├── cart-utils.js # Shared cart utilities
+│       ├── cart.js      # Cart page logic
+│       ├── checkout.js  # Checkout page logic
+│       ├── collage.js   # Main listings page logic
+│       └── detail.js    # Product detail logic
 └── templates/           # Jinja2 templates
-    ├── index.html       # Home page
+    ├── admin_login.html # Admin authentication page
+    ├── admin.html       # Admin panel page
+    ├── base.html        # Base template
+    ├── index.html       # Home page with listings
     ├── cart.html        # Shopping cart
     ├── checkout.html    # Checkout page
     └── detail.html      # Product details
 
-config.py              # App configuration
+config.py              # App configuration & environment settings
 run.py                 # Flask application entry point
 requirements.txt       # Python dependencies
 start_server.sh        # Quick start script
-migrate_csv_to_db.py   # Optional: Import legacy CSV data
+
+docs/                  # Documentation
+├── ACCESS_LOGGING.md  # Access logging implementation
+├── ADMIN_AUTHENTICATION.md # Admin login system
+├── AI_LABEL_OVERVIEWS.md # AI label overview feature
+├── MIGRATION_ARCHITECTURE.md # Technical architecture
+├── MIGRATION_SUMMARY.md # Complete changelog
+├── QUICKSTART.md      # 5-minute setup guide
+├── SETUP_AI_OVERVIEWS.md # Gemini AI setup
+└── SETUP_COMPLETE.md  # Setup completion guide
+
+tests/                 # Test suite
+├── conftest.py        # Pytest configuration
+├── fixtures/          # Test data factories
+└── services/          # Service layer tests
+
+utils/                 # Utility scripts
+├── migrate_csv_to_db.py # Import legacy CSV data
+├── sync_discogs.py    # Manual Discogs sync
+├── test_api.py        # API testing utilities
+└── test_discogs_token.py # Token validation
 ```
 
 ## 🗄️ Database & API Integration
@@ -300,112 +341,6 @@ Utility scripts are in the `utils/` directory:
 - `utils/sync_discogs.py` - Manually sync with Discogs API
 - `utils/test_discogs_token.py` - Test Discogs API token validity
 
-## 📦 Recent Changes
-
-### Search & Filtering System (December 2024)
-
-**Added:**
-- ✅ Comprehensive search and filtering UI on main listings page
-- ✅ Freetext search across titles, artists, and labels
-- ✅ Multi-faceted filtering by artist, label, year, condition, and sleeve condition
-- ✅ Filter facets with aggregate counts showing available options
-- ✅ Collapsible filter categories with search boxes
-- ✅ Active filters display with removable tags
-- ✅ Results summary showing filtered vs. total count
-- ✅ Multiple simultaneous filters support
-- ✅ Debounced search input (300ms delay)
-- ✅ Fully responsive design matching site aesthetic
-
-**API Endpoints:**
-- `GET /api/filter` - Advanced filtering with multiple criteria
-- `GET /api/facets` - Get all unique filter values with counts
-
-**Backend Methods:**
-- `InventoryService.get_filter_facets()` - Aggregate filterable fields with counts
-- `InventoryService.filter_items()` - Multi-criteria filtering logic
-
-**Frontend Components:**
-- Enhanced `collage.js` with filter state management
-- New `_filters.scss` with glassmorphism styling
-- Updated `index.html` with complete filter UI
-
-**Technical Details:**
-- Server-side filtering for performance with large datasets
-- SQLAlchemy aggregations for efficient facet counting
-- Filter buttons show count of available items
-- Search within filters for large lists (artists, labels)
-- Maintains correct detail page linking when filtered
-- Smooth animations and visual feedback
-
-### AI-Powered Label Info Section ([PR #13](https://github.com/SeaBlooms/freakinbeats-web-poc/pull/13))
-
-**Added:**
-- ✅ AI-generated label overviews using Google Gemini API
-- ✅ Label Info section on product detail pages
-- ✅ Reference links for each label (Discogs, Bandcamp, Google Search)
-- ✅ Multi-label support with automatic deduplication
-- ✅ Database caching system for AI-generated content
-- ✅ `LabelInfo` model for persistent label overview storage
-- ✅ `GeminiService` for AI integration with safety filters
-- ✅ Horizontal button layout (3 buttons per row, 33% width each)
-- ✅ Markdown formatting support for AI responses
-- ✅ Comprehensive test suite (53 new tests)
-- ✅ Utility scripts for token testing and Discogs sync
-- ✅ Documentation organized into `docs/` directory
-
-**Technical Details:**
-- Gemini AI generates concise 4-sentence overviews about record labels
-- Intelligent caching minimizes API costs (generate once, use forever)
-- Multi-label listings display interleaved: Overview → URLs for each label
-- Graceful fallback when AI is unavailable or content is blocked
-- Cost-effective: ~$0.0003 per unique label with free tier (1,500 requests/day)
-- 77 tests passing for complete coverage of new features
-- Clean project organization with `docs/` and `utils/` directories
-
-**Configuration:**
-```bash
-# Required for AI overviews (optional feature)
-export GEMINI_API_KEY="your_gemini_api_key"
-export ENABLE_AI_OVERVIEWS=true
-```
-
-Get your free Gemini API key from: https://ai.google.dev/
-
-### YouTube Player Integration ([PR #11](https://github.com/SeaBlooms/freakinbeats-web-poc/pull/11))
-
-**Added:**
-- ✅ YouTube player embedded in product detail pages
-- ✅ New routes to fetch video data from Discogs
-- ✅ Enhanced `InventoryService` to extract and handle video URLs
-- ✅ App-wide style refactoring for consistency
-- ✅ Global button styles and color variables
-- ✅ Standardized padding and spacing
-
-**Technical Details:**
-- Product detail pages now display YouTube videos when available
-- Inventory service extracts video data from Discogs API responses
-- Refactored ID handling from 'index id' to database ID (preparing for UUID migration)
-- SCSS refactored to reduce code repetition with shared variables and components
-- Improved frontend maintainability with centralized styling
-
-### Checkout Routes Feature ([PR #9](https://github.com/SeaBlooms/freakinbeats-web-poc/commit/59e0d9cb9e5c080d5e2bb5b67a0abfb302433a85))
-
-**Added:**
-- ✅ Full checkout flow with cart validation
-- ✅ `CartService` for business logic (validation, tax, shipping)
-- ✅ Checkout page (`/checkout`) with order summary
-- ✅ Cart utilities module for consistent cart management
-- ✅ Server-side validation endpoints
-- ✅ Tax and shipping calculation
-- ✅ Free shipping for orders $65+
-- ✅ Checkout-specific styling and responsive design
-
-**Technical Details:**
-- Server-side cart validation prevents checkout with unavailable items
-- Cart data stored in browser localStorage
-- Real-time price calculations with currency formatting
-- Modular JavaScript architecture with shared utilities
-- SCSS styling with glassmorphism effects
 
 ## 🌐 Browser Support
 

@@ -35,4 +35,8 @@ class Config:
     SCHEDULER_API_ENABLED = False  # Disable APScheduler API
     SYNC_INTERVAL_HOURS = 1  # Sync every hour
     ENABLE_AUTO_SYNC = os.getenv('ENABLE_AUTO_SYNC', 'true').lower() == 'true'
+    
+    # Admin authentication
+    ADMIN_PASSPHRASE = os.getenv('ADMIN_PASSPHRASE')
+    SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-production')
 
