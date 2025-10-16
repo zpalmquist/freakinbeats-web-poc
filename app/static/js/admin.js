@@ -316,7 +316,7 @@ class AdminPanel {
             const data = await response.json();
             
             if (response.ok && data.success) {
-                // Show success message with stats
+                // Show success message with stats and detailed listings
                 const stats = data.stats;
                 const successMessage = `
                     <div class="sync-success">
@@ -336,6 +336,8 @@ class AdminPanel {
                             </div>
                         </div>
                         <p class="sync-message">${data.message}</p>
+                        
+                        ${this.renderListingDetails(stats)}
                     </div>
                 `;
                 this.showSyncModal(successMessage, false);
@@ -389,6 +391,143 @@ class AdminPanel {
     closeSyncModal() {
         document.getElementById('sync-modal').classList.add('hidden');
         document.body.style.overflow = '';
+    }
+
+    renderListingDetails(stats) {
+        let html = '';
+        
+        // Added listings
+        if (stats.added_listings && stats.added_listings.length > 0) {
+            html += `
+                <div class="listing-section">
+                    <h5 class="listing-section-title added">➕ Added Listings (${stats.added_listings.length})</h5>
+                    <div class="listing-list">
+                        ${stats.added_listings.map(listing => this.renderListingItem(listing, 'added')).join('')}
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Updated listings
+        if (stats.updated_listings && stats.updated_listings.length > 0) {
+            html += `
+                <div class="listing-section">
+                    <h5 class="listing-section-title updated">🔄 Updated Listings (${stats.updated_listings.length})</h5>
+                    <div class="listing-list">
+                        ${stats.updated_listings.map(listing => this.renderListingItem(listing, 'updated')).join('')}
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Removed listings
+        if (stats.removed_listings && stats.removed_listings.length > 0) {
+            html += `
+                <div class="listing-section">
+                    <h5 class="listing-section-title removed">➖ Removed Listings (${stats.removed_listings.length})</h5>
+                    <div class="listing-list">
+                        ${stats.removed_listings.map(listing => this.renderListingItem(listing, 'removed')).join('')}
+                    </div>
+                </div>
+            `;
+        }
+        
+        return html;
+    }
+
+    renderListingItem(listing, type) {
+        const price = listing.price ? `${listing.currency || '$'}${listing.price.toFixed(2)}` : 'No price';
+        const condition = listing.condition ? `(${listing.condition})` : '';
+        const format = listing.format ? `[${listing.format}]` : '';
+        
+        let changesHtml = '';
+        if (type === 'updated' && listing.changed_fields) {
+            changesHtml = this.renderFieldChanges(listing.changed_fields);
+        }
+        
+        return `
+            <div class="listing-item listing-${type}">
+                <div class="listing-info">
+                    <div class="listing-artist">${this.escapeHtml(listing.artist)}</div>
+                    <div class="listing-title">${this.escapeHtml(listing.title)}</div>
+                    <div class="listing-meta">
+                        ${this.escapeHtml(format)} ${this.escapeHtml(condition)} - ${price}
+                    </div>
+                    ${changesHtml}
+                </div>
+                <div class="listing-id">Discogs Listing ID: ${listing.listing_id}</div>
+            </div>
+        `;
+    }
+
+    renderFieldChanges(changedFields) {
+        const changes = Object.entries(changedFields).map(([field, values]) => {
+            const oldValue = this.formatFieldValue(values.old);
+            const newValue = this.formatFieldValue(values.new);
+            const fieldName = this.getFieldDisplayName(field);
+            
+            return `
+                <div class="field-change">
+                    <span class="field-name">${fieldName}:</span>
+                    <span class="field-change-values">
+                        <span class="old-value">${oldValue}</span>
+                        <span class="change-arrow">→</span>
+                        <span class="new-value">${newValue}</span>
+                    </span>
+                </div>
+            `;
+        }).join('');
+        
+        return `
+            <div class="listing-changes">
+                <div class="changes-header">Changed:</div>
+                ${changes}
+            </div>
+        `;
+    }
+
+    formatFieldValue(value) {
+        if (value === null || value === undefined || value === '') {
+            return '<em>empty</em>';
+        }
+        if (typeof value === 'number') {
+            return value.toFixed(2);
+        }
+        return this.escapeHtml(String(value));
+    }
+
+    getFieldDisplayName(field) {
+        const fieldNames = {
+            'price_value': 'Price',
+            'price_currency': 'Currency',
+            'condition': 'Condition',
+            'sleeve_condition': 'Sleeve Condition',
+            'status': 'Status',
+            'shipping_price': 'Shipping Price',
+            'shipping_currency': 'Shipping Currency',
+            'weight': 'Weight',
+            'format_quantity': 'Quantity',
+            'external_id': 'External ID',
+            'location': 'Location',
+            'comments': 'Comments',
+            'release_title': 'Release Title',
+            'release_year': 'Release Year',
+            'artist_names': 'Artist',
+            'primary_artist': 'Primary Artist',
+            'label_names': 'Label',
+            'primary_label': 'Primary Label',
+            'format_names': 'Format',
+            'primary_format': 'Primary Format',
+            'genres': 'Genres',
+            'styles': 'Styles',
+            'country': 'Country',
+            'catalog_number': 'Catalog Number',
+            'barcode': 'Barcode',
+            'master_id': 'Master ID',
+            'release_community_have': 'Community Have',
+            'release_community_want': 'Community Want'
+        };
+        return fieldNames[field] || field;
     }
 
     applyFilters() {

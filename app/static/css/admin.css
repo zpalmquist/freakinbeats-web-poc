@@ -558,6 +558,185 @@ body {
     border: 1px solid #f5c6cb;
 }
 
+/* Listing Details Styles */
+.listing-section {
+    margin-top: 25px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+.listing-section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    padding: 10px 15px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.listing-section-title.added {
+    background-color: #d4edda;
+    color: #155724;
+    border-left: 4px solid #28a745;
+}
+
+.listing-section-title.updated {
+    background-color: #fff3cd;
+    color: #856404;
+    border-left: 4px solid #ffc107;
+}
+
+.listing-section-title.removed {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-left: 4px solid #dc3545;
+}
+
+.listing-list {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    background-color: #fafafa;
+}
+
+.listing-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.2s ease;
+}
+
+.listing-item:last-child {
+    border-bottom: none;
+}
+
+.listing-item:hover {
+    background-color: #f0f0f0;
+}
+
+.listing-item.listing-added {
+    border-left: 3px solid #28a745;
+}
+
+.listing-item.listing-updated {
+    border-left: 3px solid #ffc107;
+}
+
+.listing-item.listing-removed {
+    border-left: 3px solid #dc3545;
+}
+
+.listing-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.listing-artist {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+    font-size: 0.95rem;
+}
+
+.listing-title {
+    color: #555;
+    margin-bottom: 4px;
+    font-size: 0.9rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.listing-meta {
+    color: #666;
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+.listing-id {
+    color: #999;
+    font-size: 0.8rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    background-color: #f0f0f0;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-left: 15px;
+    flex-shrink: 0;
+}
+
+/* Field Changes Styles */
+.listing-changes {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    border: 1px solid #e9ecef;
+}
+
+.changes-header {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 6px;
+}
+
+.field-change {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+    font-size: 0.8rem;
+}
+
+.field-change:last-child {
+    margin-bottom: 0;
+}
+
+.field-name {
+    font-weight: 600;
+    color: #495057;
+    min-width: 120px;
+    margin-right: 8px;
+}
+
+.field-change-values {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.old-value {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.change-arrow {
+    color: #6c757d;
+    font-weight: bold;
+}
+
+.new-value {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.listing-changes em {
+    font-style: italic;
+    color: #6c757d;
+}
+
 /* Responsive Design */
 @media (max-width: 1200px) {
     .filter-row {
@@ -636,6 +815,37 @@ body {
     .log-detail-row {
         grid-template-columns: 1fr;
         gap: 5px;
+    }
+    
+    .listing-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+    
+    .listing-id {
+        margin-left: 0;
+        align-self: flex-end;
+    }
+    
+    .listing-list {
+        max-height: 250px;
+    }
+    
+    .field-change {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+    
+    .field-name {
+        min-width: auto;
+        margin-right: 0;
+    }
+    
+    .field-change-values {
+        width: 100%;
+        justify-content: flex-start;
     }
 }
 
