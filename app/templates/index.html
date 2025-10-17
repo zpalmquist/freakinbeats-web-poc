@@ -4,23 +4,23 @@
 
 {% block header_content %}
 <p>Freakin' Beats is located in Denver, CO and dedicated to finding all the freaky beats worldwide. We aim to serve the Denver community and USA/Canada at large with beats for any dance floor, or any digger...for whatever they deem necessary. Local pickup/delivery is available for residents in the Denver Metro and surrounding areas.</p>
-<p>Items are not totally guaranteed in stock, we also sell locally to DJ's and at events. We do our best to stay on top of this but it is a challenge to be 100% accurate. With this said we recommend paying the invoice after all records confirmed found. We will always happily refund or exchange if the item is not found.</p>
 {% endblock %}
 
 {% block content %}
 <div class="collage-container">
     <div class="loading" id="loading">
-        Loading vinyl collection...
+        <i data-lucide="disc-3"></i>Loading vinyl collection...
     </div>
     
     <div class="error" id="error" style="display: none;">
-        Error loading data. Please make sure the CSV file exists and the server is running.
+        <i data-lucide="alert-circle"></i>Error loading data. Please make sure the CSV file exists and the server is running.
     </div>
 
     <!-- Search and Filter Section -->
     <div class="filter-section" id="filter-section" style="display: none;">
         <!-- Search Bar -->
         <div class="search-bar">
+            <i data-lucide="search" class="search-icon"></i>
             <input 
                 type="text" 
                 id="search-input" 
@@ -89,17 +89,6 @@
                 </button>
                 <div class="filter-options" id="condition-filters" style="display: none;">
                     <div class="filter-buttons" id="condition-buttons"></div>
-                </div>
-            </div>
-
-            <!-- Sleeve Condition Filter -->
-            <div class="filter-category">
-                <button class="filter-toggle" data-filter="sleeve">
-                    <span class="filter-title">Sleeve Condition</span>
-                    <span class="filter-arrow">▼</span>
-                </button>
-                <div class="filter-options" id="sleeve-filters" style="display: none;">
-                    <div class="filter-buttons" id="sleeve-buttons"></div>
                 </div>
             </div>
         </div>

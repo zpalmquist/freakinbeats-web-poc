@@ -6,9 +6,39 @@
 {% assets "cart_css" %}
 <link rel="stylesheet" href="{{ ASSET_URL }}">
 {% endassets %}
+<style>
+    /* Icon styling for loading and error states */
+    .loading .lucide,
+    .error .lucide {
+        width: 2rem;
+        height: 2rem;
+        margin-right: 0.75rem;
+        vertical-align: middle;
+    }
+    
+    .empty-cart .lucide {
+        width: 3rem;
+        height: 3rem;
+        display: block;
+        margin: 0 auto 1rem;
+    }
+    
+    /* Header title with icon - use flexbox for perfect centering */
+    .header h1 {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .header h1 .lucide {
+        width: 1em;
+        height: 1em;
+        flex-shrink: 0;
+    }
+</style>
 {% endblock %}
 
-{% block header_title %}Shopping Cart{% endblock %}
+{% block header_title %}<i data-lucide="shopping-cart"></i>Shopping Cart{% endblock %}
 
 {% block header_content %}
 <p>Review your vinyl selections</p>
@@ -17,14 +47,15 @@
 {% block content %}
 <div class="cart-container">
     <div class="loading" id="loading">
-        Loading cart...
+        <i data-lucide="loader"></i>Loading cart...
     </div>
     
     <div class="error" id="error" style="display: none;">
-        Error loading cart. Please try again.
+        <i data-lucide="alert-circle"></i>Error loading cart. Please try again.
     </div>
 
     <div class="empty-cart" id="empty-cart" style="display: none;">
+        <i data-lucide="shopping-cart"></i>
         <h2>Your cart is empty</h2>
         <p>Start shopping to add some amazing vinyl records to your cart!</p>
         <a href="/" class="shop-btn">Start Shopping</a>

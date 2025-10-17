@@ -2,8 +2,8 @@
 
 .filter-section {
   @include glass;
-  padding: $spacing-lg;
-  margin-bottom: $spacing-lg;
+  padding: $spacing-md;
+  margin-bottom: $spacing-md;
   border-radius: $radius-lg;
   animation: fadeIn 0.3s ease-in;
 }
@@ -11,12 +11,12 @@
 // Search Bar
 .search-bar {
   position: relative;
-  margin-bottom: $spacing-lg;
+  margin-bottom: $spacing-md;
   
   .search-input {
     width: 100%;
-    padding: $spacing-md $spacing-lg;
-    padding-right: 45px;
+    padding: $spacing-sm $spacing-md;
+    padding-right: 40px;
     border: 2px solid rgba(255, 255, 255, 0.3);
     border-radius: $radius-md;
     background: rgba(0, 0, 0, 0.3);
@@ -65,9 +65,9 @@
 .active-filters {
   display: flex;
   align-items: center;
-  gap: $spacing-md;
-  margin-bottom: $spacing-lg;
-  padding: $spacing-md;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-md;
+  padding: $spacing-sm;
   background: rgba(0, 0, 0, 0.2);
   border-radius: $radius-md;
   flex-wrap: wrap;
@@ -140,8 +140,8 @@
 .filter-categories {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: $spacing-md;
-  margin-bottom: $spacing-lg;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-md;
 }
 
 .filter-category {

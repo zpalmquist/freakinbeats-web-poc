@@ -378,7 +378,8 @@ class DiscogsCollage {
                 <div class="vinyl-title">${item.release_title || 'Unknown Title'}</div>
                 <div class="vinyl-artist">${item.artist_names || 'Unknown Artist'}</div>
                 <div class="vinyl-price">${CartUtils.formatPrice(item.price_value)}</div>
-                <div class="vinyl-condition">${item.condition || 'Unknown'}</div>
+                <div class="vinyl-condition">Media: ${item.condition || 'Unknown'}</div>
+                <div class="vinyl-condition">Sleeve: ${item.sleeve_condition || 'Unknown'}</div>
             </div>
         `;
 

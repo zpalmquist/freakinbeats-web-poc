@@ -64,7 +64,8 @@ class CartUtils {
             price: parseFloat(listing.price_value) || 0,
             currency: listing.price_currency || '$',
             quantity: 1,
-            image: listing.image_uri || null
+            image: listing.image_uri || null,
+            available_quantity: listing.quantity || 1
         };
     }
 
@@ -136,7 +137,10 @@ class CartUtils {
         if (!value || value === '') return 'Price N/A';
         const numValue = parseFloat(value);
         if (isNaN(numValue)) return 'Price N/A';
-        return `${currency}${numValue.toFixed(2)}`;
+        
+        // Handle currency symbol formatting
+        const symbol = currency === 'USD' ? '$' : currency;
+        return `${symbol}${numValue.toFixed(2)}`;
     }
 }
 

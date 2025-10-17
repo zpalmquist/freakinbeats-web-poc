@@ -4,17 +4,76 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Freakin Beats{% endblock %}</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
     {% assets "main_css" %}
     <link rel="stylesheet" href="{{ ASSET_URL }}">
     {% endassets %}
     {% block extra_css %}{% endblock %}
+    <style>
+        /* Lucide icon styling - following Lucide design principles */
+        /* https://lucide.dev/guide/design/icon-design-guide */
+        
+        .lucide {
+            /* Use em units for relative sizing based on font size */
+            width: 1em;
+            height: 1em;
+            stroke-width: 2;
+            vertical-align: middle;
+            flex-shrink: 0;
+        }
+        
+        /* Navigation - use flexbox for perfect alignment */
+        .nav a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+        
+        .cart-icon .lucide {
+            width: 1.125em;
+            height: 1.125em;
+        }
+        
+        /* Search bar - positioned search icon */
+        .search-input {
+            padding-left: 2.75rem;
+        }
+        
+        .search-bar {
+            position: relative;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 0.875rem;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            opacity: 0.5;
+            width: 1rem;
+            height: 1rem;
+        }
+        
+        /* Header titles - flexbox for perfect icon/text alignment */
+        h1 {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        h1 .lucide {
+            width: 1em;
+            height: 1em;
+        }
+    </style>
+
 </head>
 <body>
     <div class="header">
         <div class="nav">
             <a href="/">Home</a>
             <a href="/cart" class="cart-icon">
-                Cart
+                <i data-lucide="shopping-cart"></i>Cart
                 <span class="cart-count" id="cart-count">0</span>
             </a>
         </div>
@@ -26,5 +85,9 @@
 
     <script src="{{ url_for('static', filename='js/cart-utils.js') }}"></script>
     {% block extra_js %}{% endblock %}
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
 </body>
 </html>

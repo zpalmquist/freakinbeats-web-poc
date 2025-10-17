@@ -3,6 +3,7 @@
 @import 'vinyl';
 @import 'checkout';
 @import 'filters';
+@import 'icons';
 
 .collage-container {
   @include glass-container;
@@ -37,9 +38,10 @@
   }
   
   .vinyl-image {
-    height: 200px;
+    height: 170px;
     border-radius: $radius-sm $radius-sm 0 0;
     flex-shrink: 0; /* Prevent image from shrinking */
+    border: 1px solid $white-alpha-20;
   }
   
   .vinyl-info {
@@ -54,16 +56,19 @@
     font-size: 0.9rem;
     margin-bottom: $spacing-xs;
     @include text-truncate(2);
+    color: $white-alpha-70; // Darker monochromatic text
   }
   
   .vinyl-artist {
     font-size: 0.8rem;
     margin-bottom: $spacing-xs;
+    color: $white-alpha-65; // Slightly darker
   }
   
   .vinyl-price {
     font-size: 0.9rem;
     color: $text-primary;
+    margin-bottom: $spacing-xs;
   }
   
   .no-image {
@@ -73,11 +78,13 @@
 
 .vinyl-condition {
   font-size: 0.7rem;
-  background: rgba($text-white, 0.2);
-  padding: $spacing-2xs $spacing-xs;
+  background: $white-alpha-20;
+  color: $white-alpha-65;
+  padding: $spacing-xs $spacing-sm;
   border-radius: $radius-sm;
   display: inline-block;
   margin-top: $spacing-xs;
+  margin-right: $spacing-xs;
 }
 
 @media (max-width: 768px) {

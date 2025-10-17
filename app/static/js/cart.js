@@ -54,14 +54,10 @@ class ShoppingCart {
             <div class="cart-item-info">
                 <div class="cart-item-title">${item.title}</div>
                 <div class="cart-item-artist">${item.artist}</div>
+                <div class="cart-item-quantity">Quantity: ${item.quantity}</div>
             </div>
             <div class="cart-item-price">${CartUtils.formatPrice(item.price * item.quantity, item.currency)}</div>
             <div class="cart-item-controls">
-                <div class="quantity-controls">
-                    <button class="quantity-btn" onclick="cart.decreaseQuantity('${item.listing_id}')" ${item.quantity <= 1 ? 'disabled' : ''}>-</button>
-                    <span class="quantity">${item.quantity}</span>
-                    <button class="quantity-btn" onclick="cart.increaseQuantity('${item.listing_id}')">+</button>
-                </div>
                 <button class="remove-btn" onclick="cart.removeItem('${item.listing_id}')">Remove</button>
             </div>
         `;
@@ -71,7 +67,7 @@ class ShoppingCart {
 
     increaseQuantity(listingId) {
         const item = this.cart.find(item => item.listing_id === listingId);
-        if (item) {
+        if (item && item.quantity < (item.available_quantity || 999)) {
             CartUtils.updateQuantity(listingId, item.quantity + 1);
             this.loadCart(); // Refresh cart display
         }

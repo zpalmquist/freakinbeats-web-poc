@@ -6,9 +6,46 @@
 {% assets "checkout_css" %}
 <link rel="stylesheet" href="{{ ASSET_URL }}">
 {% endassets %}
+<style>
+    /* Icon styling for loading and error states */
+    .loading .lucide,
+    .error .lucide {
+        width: 2rem;
+        height: 2rem;
+        margin-right: 0.75rem;
+        vertical-align: middle;
+    }
+    
+    .empty-cart .lucide {
+        width: 3rem;
+        height: 3rem;
+        display: block;
+        margin: 0 auto 1rem;
+    }
+    
+    .checkout-section h2 .lucide {
+        width: 1.5rem;
+        height: 1.5rem;
+        margin-right: 0.5rem;
+        vertical-align: middle;
+    }
+    
+    /* Header title with icon - use flexbox for perfect centering */
+    .header h1 {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .header h1 .lucide {
+        width: 1em;
+        height: 1em;
+        flex-shrink: 0;
+    }
+</style>
 {% endblock %}
 
-{% block header_title %}Checkout{% endblock %}
+{% block header_title %}<i data-lucide="credit-card"></i>Checkout{% endblock %}
 
 {% block header_content %}
 <p>Complete your vinyl purchase</p>
@@ -17,14 +54,15 @@
 {% block content %}
 <div class="checkout-container">
     <div class="loading" id="loading">
-        Loading checkout...
+        <i data-lucide="loader"></i>Loading checkout...
     </div>
     
     <div class="error" id="error" style="display: none;">
-        <span id="error-message">Error loading checkout. Please try again.</span>
+        <i data-lucide="alert-circle"></i><span id="error-message">Error loading checkout. Please try again.</span>
     </div>
 
     <div class="empty-cart" id="empty-cart" style="display: none;">
+        <i data-lucide="shopping-cart"></i>
         <h2>Your cart is empty</h2>
         <p>Add some vinyl records to your cart before checking out!</p>
         <a href="/" class="shop-btn">Start Shopping</a>
@@ -34,7 +72,7 @@
         <div class="checkout-sections">
             <!-- Order Summary Section -->
             <div class="checkout-section">
-                <h2>Order Summary</h2>
+                <h2><i data-lucide="clipboard-list"></i>Order Summary</h2>
                 <div class="order-items" id="order-items">
                     <!-- Order items will be inserted here -->
                 </div>
@@ -57,7 +95,7 @@
 
             <!-- Payment Section (Placeholder) -->
             <div class="checkout-section">
-                <h2>Payment Information</h2>
+                <h2><i data-lucide="credit-card"></i>Payment Information</h2>
                 <div class="payment-placeholder">
                     <p>Payment processing will be integrated in the next step</p>
                     <p>Your cart has been validated and is ready for payment!</p>

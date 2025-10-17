@@ -4,25 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Access Logs</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
     {% assets "admin_css" %}
         <link rel="stylesheet" href="{{ ASSET_URL }}">
     {% endassets %}
+    <style>
+        /* Lucide icon styling for admin panel - uses admin design tokens */
+        .lucide {
+            width: 1.125rem;
+            height: 1.125rem;
+            stroke-width: 2;
+            vertical-align: middle;
+            margin-right: 0.5rem;
+        }
+        
+        .admin-header h1 .lucide {
+            width: 1.5rem;
+            height: 1.5rem;
+            margin-right: 0.75rem;
+        }
+        
+        .sync-btn .lucide {
+            width: 1rem;
+            height: 1rem;
+        }
+        
+        .btn .lucide {
+            width: 1rem;
+            height: 1rem;
+            margin-right: 0.375rem;
+        }
+    </style>
+
 </head>
 <body>
     <div class="admin-container">
         <header class="admin-header">
-            <h1>Admin Panel - Access Logs</h1>
+            <h1><i data-lucide="settings"></i>Admin Panel - Access Logs</h1>
             <div class="admin-nav">
                 <a href="/" class="back-link">← Back to Site</a>
                 <button id="sync-discogs-btn" class="sync-btn">
-                    Sync Discogs
+                    <i data-lucide="refresh-cw"></i>Sync Discogs
                 </button>
                 <button id="clear-label-cache-btn" class="sync-btn">
-                    Clear Gemini AI Label Info
+                    <i data-lucide="trash-2"></i>Clear Gemini AI Label Info
                 </button>
                 <form method="POST" action="{{ url_for('main.admin_logout') }}" style="display: inline;">
                     <button type="submit" class="sync-btn logout-btn" style="background-color: #dc3545;">
-                        Logout
+                        <i data-lucide="log-out"></i>Logout
                     </button>
                 </form>
             </div>
@@ -107,8 +136,8 @@
                 <div class="logs-header">
                     <h3>Access Logs</h3>
                     <div class="logs-controls">
-                        <button id="refresh-logs" class="btn btn-secondary">Refresh</button>
-                        <button id="export-logs" class="btn btn-secondary">Export CSV</button>
+                        <button id="refresh-logs" class="btn btn-secondary"><i data-lucide="refresh-cw"></i>Refresh</button>
+                        <button id="export-logs" class="btn btn-secondary"><i data-lucide="download"></i>Export CSV</button>
                     </div>
                 </div>
 
@@ -168,5 +197,9 @@
     </div>
 
     <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
 </body>
 </html>

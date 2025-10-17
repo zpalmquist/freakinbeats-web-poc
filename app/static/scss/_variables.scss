@@ -53,6 +53,8 @@ $font-mono: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
 $line-height-base: 1.6;
 
 // Spacing
+$spacing-2xs: 2px;
+$spacing-3xs: 3px;
 $spacing-xs: 5px;
 $spacing-sm: 10px;
 $spacing-md: 15px;
@@ -204,19 +206,26 @@ $input-focus: #667eea;
 }
 
 @mixin vinyl-info-text {
-  color: white;
+  // Much darker monochromatic text - not white!
+  color: $black-alpha-20;
   
   .vinyl-title {
     font-weight: bold;
     line-height: 1.2;
+    color: $black-alpha-30; // Darker for better contrast
   }
 
   .vinyl-artist {
-    opacity: 0.8;
+    color: $black-alpha-30; // Even darker for secondary text
+  }
+  
+  .vinyl-condition {
+    color: $black-alpha-30; // Match artist darkness
   }
 
   .vinyl-price {
     font-weight: bold;
+    color:black; // Keep price bright as it's important
   }
 }
 
@@ -260,10 +269,12 @@ $white-alpha-10: rgba(255, 255, 255, 0.1);
 $white-alpha-20: rgba(255, 255, 255, 0.2);
 $white-alpha-30: rgba(255, 255, 255, 0.3);
 $white-alpha-50: rgba(255, 255, 255, 0.5);
+$white-alpha-60: rgba(255, 255, 255, 0.6);
+$white-alpha-65: rgba(255, 255, 255, 0.65);
+$white-alpha-70: rgba(255, 255, 255, 0.7);
 
 $black-alpha-20: rgba(0, 0, 0, 0.2);
 $black-alpha-30: rgba(0, 0, 0, 0.3);
 
 // Additional missing micro spacing
-$spacing-2xs: 2px;
-$spacing-3xs: 3px;
+

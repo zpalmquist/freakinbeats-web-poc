@@ -1,6 +1,7 @@
 @import 'variables';
 @import 'base';
 @import 'vinyl';
+@import 'icons';
 
 // Checkout page styles
 .checkout-container {
@@ -93,25 +94,25 @@
   
   .order-item-title {
     font-weight: 600;
-    color: $text-primary;
+    color: $white-alpha-70;
     margin-bottom: $spacing-xs;
   }
   
   .order-item-artist {
-    color: $text-secondary;
+    color: $white-alpha-65;
     font-size: 0.9rem;
     margin-bottom: $spacing-xs;
   }
   
   .order-item-quantity {
-    color: $text-tertiary;
+    color: $white-alpha-60;
     font-size: 0.8rem;
   }
 }
 
 .order-item-price {
   font-weight: 600;
-  color: $text-primary;
+  color: $white-alpha-70;
   font-size: 1.1rem;
 }
 

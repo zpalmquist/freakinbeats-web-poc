@@ -4,15 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login - Freakin Beats</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
     {% assets "admin_css" %}
         <link rel="stylesheet" href="{{ ASSET_URL }}">
     {% endassets %}
+    <style>
+        /* Lucide icon styling for admin */
+        .lucide {
+            width: 1.25rem;
+            height: 1.25rem;
+            stroke-width: 2;
+            vertical-align: middle;
+            margin-right: 0.5rem;
+        }
+        
+        .login-header h1 .lucide {
+            width: 2rem;
+            height: 2rem;
+            vertical-align: middle;
+            margin-right: 0.75rem;
+        }
+        
+        .login-btn .lucide {
+            width: 1.125rem;
+            height: 1.125rem;
+        }
+    </style>
+
 </head>
 <body>
     <div class="login-container">
         <div class="login-card">
             <div class="login-header">
-                <h1>Admin Login</h1>
+                <h1><i data-lucide="shield-check"></i>Admin Login</h1>
                 <p>Enter your passphrase to access the admin panel</p>
             </div>
             
@@ -41,7 +65,7 @@
                 </div>
                 
                 <button type="submit" class="login-btn">
-                    Login to Admin Panel
+                    <i data-lucide="log-in"></i>Login to Admin Panel
                 </button>
             </form>
             
@@ -52,5 +76,9 @@
             </div>
         </div>
     </div>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
 </body>
 </html>

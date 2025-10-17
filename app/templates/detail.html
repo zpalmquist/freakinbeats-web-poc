@@ -6,6 +6,16 @@
 {% assets "detail_css" %}
 <link rel="stylesheet" href="{{ ASSET_URL }}">
 {% endassets %}
+<style>
+    /* Icon styling for loading and error states */
+    .loading .lucide,
+    .error .lucide {
+        width: 2rem;
+        height: 2rem;
+        margin-right: 0.75rem;
+        vertical-align: middle;
+    }
+</style>
 {% endblock %}
 
 {% block header_title %}
@@ -16,11 +26,11 @@ Freakin Beats
 {% block content %}
 <div class="detail-container">
     <div class="loading" id="loading">
-        🎵 Loading record details...
+        <i data-lucide="disc-3"></i>Loading record details...
     </div>
     
     <div class="error" id="error" style="display: none;">
-        ❌ Error loading record details. Please try again.
+        <i data-lucide="alert-circle"></i>Error loading record details. Please try again.
     </div>
 
     <div class="detail-content" id="detail-content" style="display: none;">
