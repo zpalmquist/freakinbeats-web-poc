@@ -1,11 +1,12 @@
 // Colors - Main Site
-$gradient-start: #55f860;
-$gradient-end: #34abff;
+$gradient-start: #334155;
+$gradient-end: #0f172a;
 $primary-color: #34abff;
-$text-primary: #000;
-$text-secondary: #666;
+$text-secondary: rgba(34, 211, 238, 0.8);
+$text-primary: rgba(224, 227, 227, 1);
 $text-tertiary: #999;
 $text-white: #fff;
+$text-black: #000;
 $error-color: #ef4444;
 $success-color: #000000;
 
@@ -48,9 +49,11 @@ $neutral-800: #343a40;
 $neutral-900: #212529;
 
 // Typography
-$font-stack: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+$font-heading: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+$font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 $font-mono: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
 $line-height-base: 1.6;
+$line-height-heading: 1.2;
 
 // Spacing
 $spacing-2xs: 2px;
@@ -206,26 +209,25 @@ $input-focus: #667eea;
 }
 
 @mixin vinyl-info-text {
-  // Much darker monochromatic text - not white!
-  color: $black-alpha-20;
-  
+  color: $text-primary;
+
   .vinyl-title {
     font-weight: bold;
     line-height: 1.2;
-    color: $black-alpha-30; // Darker for better contrast
+    color: $text-primary
   }
 
   .vinyl-artist {
-    color: $black-alpha-30; // Even darker for secondary text
+    color: $text-secondary;
   }
   
   .vinyl-condition {
-    color: $black-alpha-30; // Match artist darkness
+    color: $text-primary;
   }
 
   .vinyl-price {
     font-weight: bold;
-    color:black; // Keep price bright as it's important
+    color: $text-primary;
   }
 }
 
@@ -273,8 +275,13 @@ $white-alpha-60: rgba(255, 255, 255, 0.6);
 $white-alpha-65: rgba(255, 255, 255, 0.65);
 $white-alpha-70: rgba(255, 255, 255, 0.7);
 
+$black-alpha-10: rgba(0, 0, 0, 0.1);
 $black-alpha-20: rgba(0, 0, 0, 0.2);
 $black-alpha-30: rgba(0, 0, 0, 0.3);
-
-// Additional missing micro spacing
-
+$black-alpha-40: rgba(0, 0, 0, 0.4);
+$black-alpha-50: rgba(0, 0, 0, 0.5);
+$black-alpha-60: rgba(0, 0, 0, 0.6);
+$black-alpha-70: rgba(0, 0, 0, 0.7);
+$black-alpha-80: rgba(0, 0, 0, 0.8);
+$black-alpha-90: rgba(0, 0, 0, 0.9);
+// ============================================================================

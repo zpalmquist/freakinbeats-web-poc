@@ -94,30 +94,30 @@
   
   .order-item-title {
     font-weight: 600;
-    color: $white-alpha-70;
+      color: $text-primary;
     margin-bottom: $spacing-xs;
   }
   
   .order-item-artist {
-    color: $white-alpha-65;
+    color: $text-secondary;
     font-size: 0.9rem;
     margin-bottom: $spacing-xs;
   }
   
   .order-item-quantity {
-    color: $white-alpha-60;
+    color: $text-secondary;
     font-size: 0.8rem;
   }
 }
 
-.order-item-price {
+  .order-item-price {
   font-weight: 600;
-  color: $white-alpha-70;
+  color: $text-primary;
   font-size: 1.1rem;
 }
 
 .order-total {
-  border-top: 2px solid $white-alpha-20;
+  border-top: 2px solid $table-border;
   padding-top: $spacing-md;
   margin-top: $spacing-md;
 }

@@ -8,7 +8,7 @@
 }
 
 body {
-  font-family: 'Arial', sans-serif;
+  font-family: $font-body;
   background: linear-gradient(135deg, $gradient-start 0%, $gradient-end 100%);
   min-height: 100vh;
   padding: $spacing-lg;
@@ -21,9 +21,12 @@ body {
   position: relative;
 
   h1 {
+    font-family: $font-heading;
     font-size: 2.5rem;
+    font-weight: 700;
     margin-bottom: $spacing-sm;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    line-height: $line-height-heading;
   }
 
   p {

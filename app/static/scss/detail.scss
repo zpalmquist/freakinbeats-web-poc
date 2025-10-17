@@ -39,13 +39,13 @@
   .vinyl-title {
     font-size: 2rem;
     margin-bottom: $spacing-sm;
-    color: $white-alpha-70;
+    color: $text-primary;
   }
   
   .vinyl-artist {
     font-size: 1.3rem;
     margin-bottom: $spacing-lg;
-    color: $white-alpha-65;
+    color: $text-secondary;
   }
   
   .vinyl-price {
@@ -122,17 +122,17 @@
   border-radius: $radius-sm;
 }
 
-.detail-label {
+  .detail-label {
   font-size: 0.9rem;
   opacity: 0.8;
   margin-bottom: $spacing-xs;
-  color: $white-alpha-60;
+  color: $text-primary;
 }
 
 .detail-value {
   font-size: 1.1rem;
   font-weight: bold;
-  color: $white-alpha-70;
+  color: $text-primary;
 }
 
 .add-to-cart {
@@ -153,7 +153,7 @@
     h3 {
       margin: 0;
       font-size: 1.1rem;
-      color: $white-alpha-70;
+      color: $text-primary;
       text-align: center;
     }
   }
@@ -233,7 +233,7 @@
     h3 {
       margin: 0;
       font-size: 1.1rem;
-      color: $white-alpha-70;
+      color: $text-primary;
       text-align: center;
     }
   }

@@ -56,13 +56,13 @@
     font-size: 0.9rem;
     margin-bottom: $spacing-xs;
     @include text-truncate(2);
-    color: $white-alpha-70; // Darker monochromatic text
+    color: $text-primary;
   }
   
   .vinyl-artist {
     font-size: 0.8rem;
     margin-bottom: $spacing-xs;
-    color: $white-alpha-65; // Slightly darker
+    color: $text-secondary;
   }
   
   .vinyl-price {
@@ -79,7 +79,7 @@
 .vinyl-condition {
   font-size: 0.7rem;
   background: $white-alpha-20;
-  color: $white-alpha-65;
+  color: $text-primary;
   padding: $spacing-xs $spacing-sm;
   border-radius: $radius-sm;
   display: inline-block;
